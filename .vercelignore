@@ -1,0 +1,5 @@
+.git
+.gitignore
+*.log
+test_prd_invariants.js
+README.md

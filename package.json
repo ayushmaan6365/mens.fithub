@@ -1,0 +1,24 @@
+{
+  "name": "mens-fithub",
+  "version": "2.0.0",
+  "description": "Men's Fit Hub — High-End Editorial Video-Commerce Platform with Verified Affiliate Tag Injection",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "build": "echo 'Ready for deployment'"
+  },
+  "keywords": [
+    "menswear",
+    "editorial",
+    "video-commerce",
+    "reels",
+    "affiliate-marketing",
+    "ssense",
+    "zara-man",
+    "lookbook"
+  ],
+  "author": "Men's Fit Hub Engineering Team",
+  "license": "UNLICENSED",
+  "private": true
+}

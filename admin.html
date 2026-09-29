@@ -1,0 +1,2129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MEN'S FIT HUB • Creator Admin Panel</title>
+  
+  <link rel="stylesheet" href="apps/storefront/css/editorial.css">
+  
+  <style>
+    body {
+      background: #09090B;
+      color: #FFFFFF;
+      font-family: var(--font-sans);
+      margin: 0;
+      padding-bottom: 5rem;
+    }
+
+    /* Password Protection Lock Overlay */
+    .admin-lock-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(7, 7, 10, 0.96);
+      backdrop-filter: blur(20px);
+      z-index: 99999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      transition: opacity 200ms ease;
+    }
+
+    .admin-lock-overlay.unlocked {
+      display: none;
+    }
+
+    .lock-box {
+      width: 100%;
+      max-width: 400px;
+      background: #121217;
+      border: 1px solid #27272A;
+      border-radius: 12px;
+      padding: 2.5rem;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9);
+      text-align: center;
+    }
+
+    .lock-icon-circle {
+      width: 54px;
+      height: 54px;
+      background: #181820;
+      border: 1px solid #2E2E36;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.25rem auto;
+      color: #38BDF8;
+    }
+
+    .lock-title {
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      margin: 0;
+    }
+
+    .lock-sub {
+      font-size: 12px;
+      color: #A1A1AA;
+      margin: 0.5rem 0 1.5rem 0;
+    }
+
+    .lock-input-group {
+      position: relative;
+      margin-bottom: 1rem;
+    }
+
+    .lock-input {
+      width: 100%;
+      background: #181820;
+      border: 1px solid #3F3F46;
+      border-radius: 8px;
+      color: #FFFFFF;
+      font-family: var(--font-mono);
+      font-size: 15px;
+      padding: 0.85rem 1rem;
+      box-sizing: border-box;
+      outline: none;
+      letter-spacing: 0.1em;
+      text-align: center;
+      transition: border-color 150ms ease;
+    }
+
+    .lock-input:focus {
+      border-color: #FFFFFF;
+    }
+
+    .lock-btn {
+      width: 100%;
+      background: #FFFFFF;
+      color: #000000;
+      border: none;
+      border-radius: 8px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.85rem;
+      cursor: pointer;
+      transition: background 150ms ease;
+    }
+
+    .lock-btn:hover {
+      background: #E4E4E7;
+    }
+
+    .lock-error {
+      color: #EF4444;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      margin-top: 0.75rem;
+      min-height: 16px;
+    }
+
+    .lock-hint {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: #71717A;
+      margin-top: 1rem;
+    }
+
+    /* Modal Overlay for Change Password */
+    .admin-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(12px);
+      z-index: 10000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    .admin-modal-backdrop.open {
+      display: flex;
+    }
+
+    .admin-modal-content {
+      width: 100%;
+      max-width: 440px;
+      background: #141419;
+      border: 1px solid #2E2E36;
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+    }
+
+    /* Top Admin Header */
+    .admin-top-bar {
+      background: #111115;
+      border-bottom: 1px solid #27272A;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .admin-brand {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .admin-brand h1 {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      margin: 0;
+    }
+
+    .sync-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: #10B981;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 0.25rem 0.65rem;
+      border-radius: 20px;
+    }
+
+    .sync-dot {
+      width: 6px;
+      height: 6px;
+      background: #10B981;
+      border-radius: 50%;
+      animation: pulse 1.8s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 1; }
+    }
+
+    /* Simple Tab Menu */
+    .admin-nav {
+      display: flex;
+      gap: 0.5rem;
+      background: #16161B;
+      padding: 0.3rem;
+      border-radius: 8px;
+      border: 1px solid #27272A;
+    }
+
+    .admin-nav-btn {
+      padding: 0.5rem 1.25rem;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #A1A1AA;
+      border-radius: 6px;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      transition: all 150ms ease;
+    }
+
+    .admin-nav-btn:hover {
+      color: #FFFFFF;
+    }
+
+    .admin-nav-btn.active {
+      background: #FFFFFF;
+      color: #000000;
+      font-weight: 700;
+    }
+
+    .admin-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .view-store-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: transparent;
+      border: 1px solid #3F3F46;
+      color: #FFFFFF;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      text-decoration: none;
+      border-radius: 6px;
+      transition: all 140ms ease;
+    }
+
+    .view-store-btn:hover {
+      background: #27272A;
+      border-color: #FFFFFF;
+    }
+
+    .btn-pwd-change {
+      background: #181820;
+      border: 1px solid #2E2E36;
+      color: #A1A1AA;
+      padding: 0.5rem 0.85rem;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 140ms ease;
+    }
+
+    .btn-pwd-change:hover {
+      color: #FFFFFF;
+      border-color: #FFFFFF;
+    }
+
+    /* Container */
+    .admin-container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 200ms ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Clean Card Layout */
+    .admin-panel-card {
+      background: #121216;
+      border: 1px solid #27272A;
+      border-radius: 10px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .panel-header {
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid #222228;
+      padding-bottom: 1rem;
+    }
+
+    .panel-title {
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .panel-desc {
+      font-size: 13px;
+      color: #A1A1AA;
+      margin-top: 0.35rem;
+    }
+
+    /* Form Fields */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.25rem;
+    }
+
+    .form-full {
+      grid-column: 1 / -1;
+    }
+
+    .simple-label {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #D4D4D8;
+      margin-bottom: 0.4rem;
+    }
+
+    .simple-input, .simple-select, .simple-textarea {
+      width: 100%;
+      background: #18181E;
+      border: 1px solid #2E2E36;
+      border-radius: 6px;
+      color: #FFFFFF;
+      font-family: inherit;
+      font-size: 14px;
+      padding: 0.75rem 1rem;
+      box-sizing: border-box;
+      outline: none;
+      transition: border-color 150ms ease;
+    }
+
+    .simple-input:focus, .simple-select:focus, .simple-textarea:focus {
+      border-color: #FFFFFF;
+    }
+
+    .input-hint {
+      font-size: 11px;
+      color: #71717A;
+      margin-top: 0.35rem;
+    }
+
+    /* Clothes Selector Checklist for Reels */
+    .clothes-picker-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+      max-height: 280px;
+      overflow-y: auto;
+      border: 1px solid #27272A;
+      border-radius: 6px;
+      padding: 0.75rem;
+      background: #16161B;
+    }
+
+    .picker-box {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.6rem;
+      background: #1B1B22;
+      border: 1px solid #2E2E36;
+      border-radius: 6px;
+      cursor: pointer;
+      user-select: none;
+      transition: all 120ms ease;
+    }
+
+    .picker-box:hover {
+      border-color: #52525B;
+    }
+
+    .picker-box.checked {
+      border-color: #10B981;
+      background: rgba(16, 185, 129, 0.08);
+    }
+
+    .picker-img {
+      width: 40px;
+      height: 50px;
+      object-fit: cover;
+      border-radius: 4px;
+    }
+
+    /* Big Submit Buttons */
+    .btn-submit-main {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #FFFFFF;
+      color: #000000;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 0.85rem 2rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 1.5rem;
+      transition: all 150ms ease;
+    }
+
+    .btn-submit-main:hover {
+      background: #E4E4E7;
+      transform: translateY(-1px);
+    }
+
+    /* Existing Items List */
+    .items-table-card {
+      background: #121216;
+      border: 1px solid #27272A;
+      border-radius: 10px;
+      padding: 1.5rem;
+    }
+
+    .items-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .product-manage-card {
+      background: #18181E;
+      border: 1px solid #27272A;
+      border-radius: 8px;
+      padding: 1rem;
+      display: flex;
+      gap: 1rem;
+    }
+
+    .product-manage-img {
+      width: 74px;
+      height: 98px;
+      object-fit: cover;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+
+    .product-manage-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .buy-link-input-row {
+      margin-top: 0.5rem;
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .btn-update-link {
+      background: #27272A;
+      color: #FFFFFF;
+      border: 1px solid #3F3F46;
+      border-radius: 4px;
+      padding: 0.35rem 0.75rem;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .btn-update-link:hover {
+      background: #FFFFFF;
+      color: #000000;
+    }
+
+    .btn-delete-simple {
+      background: transparent;
+      color: #EF4444;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 4px;
+      padding: 0.25rem 0.6rem;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      cursor: pointer;
+    }
+
+    .btn-delete-simple:hover {
+      background: #EF4444;
+      color: #FFFFFF;
+    }
+
+    /* Live Toast */
+    .save-alert {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #10B981;
+      color: #000000;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 0.85rem 1.5rem;
+      border-radius: 6px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 200ms ease;
+      z-index: 1000;
+    }
+
+    .save-alert.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* Forgot Password Button */
+    .btn-forgot-pwd {
+      background: transparent;
+      border: none;
+      color: #38BDF8;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      transition: color 150ms ease;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .btn-forgot-pwd:hover {
+      color: #FFFFFF;
+    }
+
+    @media (max-width: 850px) {
+      .admin-top-bar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.85rem;
+        padding: 0.85rem 1rem;
+      }
+      .admin-brand {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.35rem;
+      }
+      .admin-nav {
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 4px;
+        scrollbar-width: none;
+      }
+      .admin-nav::-webkit-scrollbar {
+        display: none;
+      }
+      .admin-header-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+      .admin-container {
+        padding: 1rem 0.85rem;
+      }
+      .form-grid, .items-grid, .clothes-picker-grid {
+        grid-template-columns: 1fr;
+      }
+      .product-manage-card {
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+      .product-manage-img {
+        width: 100%;
+        height: 140px;
+      }
+      .lock-box {
+        padding: 1.5rem 1rem;
+      }
+    }
+
+    /* =======================================================
+       CUSTOMERS & ORDERS CRM STYLING
+       ======================================================= */
+    .crm-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .crm-stat-box {
+      background: #181820;
+      border: 1px solid #27272A;
+      border-radius: 8px;
+      padding: 1.25rem 1.5rem;
+    }
+    .crm-stat-title {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: #A1A1AA;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .crm-stat-val {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      font-weight: 800;
+      margin-top: 0.35rem;
+    }
+    .customer-list-card {
+      background: #181820;
+      border: 1px solid #2E2E36;
+      border-radius: 10px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+      transition: all 150ms ease;
+    }
+    .customer-list-card:hover {
+      border-color: #3F3F46;
+      background: #1C1C24;
+    }
+    .cust-avatar-box {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #27272A, #3F3F46);
+      border: 1px solid #52525B;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 16px;
+      color: #FFFFFF;
+      flex-shrink: 0;
+    }
+    .cust-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .cust-badge-google {
+      background: rgba(66, 133, 244, 0.15);
+      color: #60A5FA;
+      border: 1px solid rgba(66, 133, 244, 0.3);
+    }
+    .cust-badge-email {
+      background: rgba(161, 161, 170, 0.15);
+      color: #D4D4D8;
+      border: 1px solid rgba(161, 161, 170, 0.3);
+    }
+    .order-status-badge {
+      display: inline-block;
+      padding: 0.25rem 0.65rem;
+      border-radius: 9999px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .order-status-active {
+      background: rgba(245, 158, 11, 0.15);
+      color: #FBBF24;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+    .order-status-delivered {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34D399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    .order-status-processing {
+      background: rgba(56, 189, 248, 0.15);
+      color: #38BDF8;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+    .order-card-detail {
+      background: #181820;
+      border: 1px solid #27272A;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .order-card-img {
+      width: 64px;
+      height: 74px;
+      border-radius: 6px;
+      object-fit: cover;
+      border: 1px solid #2E2E36;
+      flex-shrink: 0;
+    }
+    .customer-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(12px);
+      z-index: 10000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .customer-modal-backdrop.open {
+      display: flex;
+    }
+    .customer-modal-content {
+      width: 100%;
+      max-width: 680px;
+      max-height: 90vh;
+      overflow-y: auto;
+      background: #141419;
+      border: 1px solid #2E2E36;
+      border-radius: 14px;
+      padding: 2rem;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8);
+    }
+    @media (max-width: 768px) {
+      .customer-list-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+      .customer-modal-content {
+        padding: 1.25rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- =======================================================
+       REAL-TIME PASSWORD PROTECTION LOCK SCREEN
+       ======================================================= -->
+  <div class="admin-lock-overlay" id="adminLockOverlay">
+    <div class="lock-box" id="adminLockBox" style="max-width: 440px;">
+      
+      <!-- VIEW 1: ENTER PASSCODE -->
+      <div id="lockPasscodeView">
+        <div class="lock-icon-circle">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+        </div>
+        <h2 class="lock-title">MEN'S FIT HUB ADMIN</h2>
+        <p class="lock-sub">Enter Creator Passcode to access publishing controls</p>
+
+        <form onsubmit="handlePasswordUnlock(event)">
+          <div class="lock-input-group">
+            <input type="password" class="lock-input" id="passcodeInput" placeholder="••••••••" autofocus autocomplete="current-password">
+          </div>
+          <button type="submit" class="lock-btn">UNLOCK CREATOR PANEL</button>
+        </form>
+
+        <div class="lock-error" id="lockErrorMsg"></div>
+
+        <div style="margin-top: 1.25rem; border-top: 1px solid #27272A; padding-top: 1rem;">
+          <button type="button" class="btn-forgot-pwd" onclick="switchToRecoveryView()">
+            Forgot Passcode? Reset with Security Questions →
+          </button>
+        </div>
+      </div>
+
+      <!-- VIEW 2: RECOVER PASSCODE VIA SECURITY QUESTIONS (In-Place, Zero Z-Index Bug) -->
+      <div id="lockRecoveryView" style="display: none; text-align: left;">
+        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem;">
+          <div style="width: 36px; height: 36px; border-radius: 50%; background: #181820; border: 1px solid #2E2E36; display: flex; align-items: center; justify-content: center; color: #10B981; flex-shrink: 0;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+          </div>
+          <div>
+            <h3 style="margin: 0; font-family: var(--font-display); font-size: 1.1rem; font-weight: 800;">IDENTITY VERIFICATION</h3>
+            <p style="margin: 2px 0 0 0; font-size: 11px; color: #A1A1AA;">Answer your security questions to reset passcode</p>
+          </div>
+        </div>
+
+        <form onsubmit="handleSecurityRecoverySubmit(event)" style="margin-top: 1rem;">
+          <div style="margin-bottom: 0.75rem;">
+            <label class="simple-label">1. WHAT IS THE CREATOR / ADMIN USERNAME?</label>
+            <input type="text" class="simple-input" id="recoveryAnsName" required placeholder="Default: admin">
+          </div>
+
+          <div style="margin-bottom: 0.75rem;">
+            <label class="simple-label">2. WHAT IS YOUR FIRST SCHOOL / COLLEGE NAME?</label>
+            <input type="text" class="simple-input" id="recoveryAnsSchool" required placeholder="Default: Delhi Public School">
+          </div>
+
+          <div style="margin-bottom: 0.75rem;">
+            <label class="simple-label">3. WHAT IS YOUR HOMETOWN OR SECRET CITY?</label>
+            <input type="text" class="simple-input" id="recoveryAnsCity" required placeholder="Default: Mumbai">
+          </div>
+
+          <div style="border-top: 1px solid #27272A; padding-top: 0.75rem; margin-top: 0.75rem; margin-bottom: 0.75rem;">
+            <div style="font-family: var(--font-mono); font-size: 9px; color: #10B981; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.5rem;">NEW PASSCODE</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+              <div>
+                <label class="simple-label">NEW PASSCODE</label>
+                <input type="password" class="simple-input" id="recoveryNewPass" required placeholder="Min 4 chars">
+              </div>
+              <div>
+                <label class="simple-label">CONFIRM PASSCODE</label>
+                <input type="password" class="simple-input" id="recoveryConfirmPass" required placeholder="Re-enter">
+              </div>
+            </div>
+          </div>
+
+          <div id="recoveryErrorMsg" style="color: #EF4444; font-family: var(--font-mono); font-size: 11px; margin-bottom: 0.75rem; min-height: 16px;"></div>
+
+          <div style="display: flex; gap: 0.5rem; justify-content: space-between; align-items: center;">
+            <button type="button" onclick="switchToPasscodeView()" style="background: transparent; color: #A1A1AA; border: none; font-family: var(--font-mono); font-size: 11px; cursor: pointer; text-decoration: underline;">← Back to Login</button>
+            <button type="submit" style="background: #10B981; color: #000000; border: none; border-radius: 6px; padding: 0.65rem 1rem; font-family: var(--font-mono); font-size: 11px; font-weight: 700; cursor: pointer;">VERIFY & SET PASSCODE</button>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Real-Time Passcode Update Modal -->
+  <div class="admin-modal-backdrop" id="pwdChangeModal">
+    <div class="admin-modal-content">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+        <h3 style="margin: 0; font-family: var(--font-display); font-size: 1.15rem; font-weight: 800; letter-spacing: 0.05em;">SECURITY & PASSCODE SETTINGS</h3>
+        <button onclick="closeChangePasswordModal()" style="background: none; border: none; color: #71717A; font-size: 18px; cursor: pointer; padding: 4px;">✕</button>
+      </div>
+
+      <form onsubmit="handlePasswordChangeSubmit(event)">
+        <div style="margin-bottom: 1rem;">
+          <label class="simple-label">CURRENT PASSCODE</label>
+          <input type="password" class="simple-input" id="currentPassInput" required placeholder="Enter current passcode">
+        </div>
+
+        <div style="margin-bottom: 1rem;">
+          <label class="simple-label">NEW PASSCODE (MIN 4 CHARACTERS)</label>
+          <input type="password" class="simple-input" id="newPassInput" required placeholder="Enter new passcode">
+        </div>
+
+        <div style="margin-bottom: 1.25rem;">
+          <label class="simple-label">CONFIRM NEW PASSCODE</label>
+          <input type="password" class="simple-input" id="confirmPassInput" required placeholder="Re-enter new passcode">
+        </div>
+
+        <!-- Optional: Customize Security Questions -->
+        <div style="margin-bottom: 1.25rem; border-top: 1px solid #27272A; padding-top: 1rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none;" onclick="toggleSecurityFields()">
+            <span style="font-family: var(--font-mono); font-size: 11px; color: #38BDF8; font-weight: 600;">⚙ CUSTOMIZE SECURITY QUESTIONS</span>
+            <span id="secToggleIcon" style="color: #38BDF8; font-family: var(--font-mono); font-size: 11px;">[SHOW +]</span>
+          </div>
+
+          <div id="securityConfigFields" style="display: none; margin-top: 0.85rem; flex-direction: column; gap: 0.75rem;">
+            <div>
+              <label class="simple-label">CREATOR / ADMIN USERNAME</label>
+              <input type="text" class="simple-input" id="cfgAnsName" placeholder="Default: admin">
+            </div>
+            <div>
+              <label class="simple-label">FIRST SCHOOL / COLLEGE NAME</label>
+              <input type="text" class="simple-input" id="cfgAnsSchool" placeholder="Default: Delhi Public School">
+            </div>
+            <div>
+              <label class="simple-label">HOMETOWN OR SECRET CITY</label>
+              <input type="text" class="simple-input" id="cfgAnsCity" placeholder="Default: Mumbai">
+            </div>
+          </div>
+        </div>
+
+        <div id="pwdModalError" style="color: #EF4444; font-family: var(--font-mono); font-size: 11px; margin-bottom: 1rem; min-height: 16px;"></div>
+
+        <div style="display: flex; gap: 0.75rem; justify-content: flex-end;">
+          <button type="button" onclick="closeChangePasswordModal()" style="background: transparent; color: #A1A1AA; border: 1px solid #3F3F46; border-radius: 6px; padding: 0.65rem 1.25rem; font-family: var(--font-mono); font-size: 11px; cursor: pointer;">CANCEL</button>
+          <button type="submit" style="background: #FFFFFF; color: #000000; border: none; border-radius: 6px; padding: 0.65rem 1.25rem; font-family: var(--font-mono); font-size: 11px; font-weight: 700; cursor: pointer;">SAVE CHANGES</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Top Admin Bar -->
+  <header class="admin-top-bar">
+    <div class="admin-brand">
+      <h1>MEN'S FIT HUB • CREATOR STUDIO</h1>
+      <div class="sync-badge">
+        <span class="sync-dot"></span>
+        <span>REAL-TIME STOREFRONT SYNC: ACTIVE</span>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <nav class="admin-nav">
+      <button class="admin-nav-btn active" onclick="switchAdminTab('tabReels')">🎬 1. REELS (VIDEOS)</button>
+      <button class="admin-nav-btn" onclick="switchAdminTab('tabClothes')">👕 2. CLOTHES & BUY LINKS</button>
+      <button class="admin-nav-btn" onclick="switchAdminTab('tabStats')">📊 3. STATS & CLICKS</button>
+      <button class="admin-nav-btn" onclick="switchAdminTab('tabCustomers')">👥 4. CUSTOMERS & ORDERS</button>
+    </nav>
+
+    <!-- Header Actions -->
+    <div class="admin-header-actions">
+      <!-- Change Password Button -->
+      <button class="btn-pwd-change" onclick="promptChangePassword()" title="Change Real-time Passcode">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+        <span>CHANGE PASSCODE</span>
+      </button>
+
+      <!-- Lock Panel Button -->
+      <button class="btn-pwd-change" onclick="lockAdminPanel()" title="Lock Panel">
+        <span>🔒 LOCK</span>
+      </button>
+
+      <!-- Link to Open Customer Storefront -->
+      <a href="index.html" target="_blank" class="view-store-btn">
+        <span>CUSTOMER WEBSITE ↗</span>
+      </a>
+    </div>
+  </header>
+
+  <main class="admin-container">
+
+    <!-- =======================================================
+         TAB 1: REELS (9:16 VIDEOS)
+         ======================================================= -->
+    <section class="tab-content active" id="tabReels">
+      
+      <!-- Upload Reel Form -->
+      <div class="admin-panel-card">
+        <div class="panel-header">
+          <h2 class="panel-title">ADD A NEW 9:16 REEL TO THE FEED</h2>
+          <p class="panel-desc">Paste your video link, give it a title, and select which clothes from your wardrobe are featured in this reel.</p>
+        </div>
+
+        <form id="reelUploadForm" onsubmit="handleReelSubmit(event)">
+          <div class="form-grid">
+            <div>
+              <label class="simple-label">REEL TITLE</label>
+              <input type="text" class="simple-input" id="newReelTitle" placeholder="e.g. Minimalist Linen Uniform" required>
+            </div>
+
+            <div>
+              <label class="simple-label">TAGS (COMMA SEPARATED)</label>
+              <input type="text" class="simple-input" id="newReelTags" placeholder="linen, summer, streetwear" value="minimalism, streetwear">
+            </div>
+
+            <div>
+              <label class="simple-label">9:16 VIDEO LINK (MP4 / STREAM URL)</label>
+              <input type="text" class="simple-input" id="newReelVideo" placeholder="https://commondatastorage.googleapis.com/.../video.mp4" value="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" required>
+              <div class="input-hint">Paste an MP4 video URL or use a Cloudflare Stream / CDN link.</div>
+            </div>
+
+            <div>
+              <label class="simple-label">POSTER / COVER IMAGE LINK</label>
+              <input type="text" class="simple-input" id="newReelPoster" placeholder="https://images.unsplash.com/..." value="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=800&q=80">
+            </div>
+
+            <div class="form-full">
+              <label class="simple-label">STYLING NOTES / CAPTION</label>
+              <textarea class="simple-textarea" id="newReelCaption" rows="2" placeholder="Write advice on how to style this outfit..."></textarea>
+            </div>
+
+            <!-- Garment Selector -->
+            <div class="form-full">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+                <label class="simple-label" style="margin: 0;">TAG CLOTHES FEATURED IN THIS REEL</label>
+                <span id="taggedClothesCount" style="font-family: var(--font-mono); font-size: 11px; color: #10B981;">0 items selected</span>
+              </div>
+              <div class="clothes-picker-grid" id="reelClothesSelector">
+                <!-- Dynamically loaded from DB -->
+              </div>
+              <div class="input-hint">Click on any garment to tag/untag it. These will show inside the "Shop This Look" drawer on the customer website.</div>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-submit-main">
+            🚀 PUBLISH REEL TO WEBSITE
+          </button>
+        </form>
+      </div>
+
+      <!-- Existing Reels List -->
+      <div class="items-table-card">
+        <h3 style="font-family: var(--font-display); font-size: 1.15rem; margin-top: 0; margin-bottom: 1rem;">ALL CURRENT PUBLISHED REELS</h3>
+        <div id="existingReelsList" style="display: flex; flex-direction: column; gap: 0.75rem;">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+
+    </section>
+
+    <!-- =======================================================
+         TAB 2: CLOTHES & DIRECT BUY LINKS
+         ======================================================= -->
+    <section class="tab-content" id="tabClothes">
+      
+      <!-- Add Clothing Item Form -->
+      <div class="admin-panel-card">
+        <div class="panel-header">
+          <h2 class="panel-title">ADD A NEW CLOTHING ITEM & BUY LINK</h2>
+          <p class="panel-desc">Add garments to your master wardrobe. Whatever Buy Link you put here will open directly in a new tab when a customer clicks "BUY".</p>
+        </div>
+
+        <form id="productUploadForm" onsubmit="handleProductSubmit(event)">
+          <div class="form-grid">
+            <div>
+              <label class="simple-label">CLOTHING NAME</label>
+              <input type="text" class="simple-input" id="newProdName" placeholder="e.g. Oversized Camp-Collar Linen Shirt" required>
+            </div>
+
+            <div>
+              <label class="simple-label">BRAND NAME</label>
+              <input type="text" class="simple-input" id="newProdBrand" placeholder="e.g. Zara Man / Studio Nicholson" required>
+            </div>
+
+            <div>
+              <label class="simple-label">CATEGORY</label>
+              <select class="simple-select" id="newProdCategory">
+                <option value="SHIRT">SHIRT / TOP</option>
+                <option value="PANT">PANT / DENIM</option>
+                <option value="OUTERWEAR">OUTERWEAR / JACKET</option>
+                <option value="SHOE">FOOTWEAR</option>
+                <option value="ACCESSORY">ACCESSORY</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="simple-label">PRICE (INR ₹)</label>
+              <input type="number" class="simple-input" id="newProdPrice" value="3499" required>
+            </div>
+
+            <div class="form-full">
+              <label class="simple-label" style="color: #38BDF8;">DIRECT BUY LINK (OPENED WHEN CUSTOMER CLICKS "BUY")</label>
+              <input type="url" class="simple-input" id="newProdBuyLink" placeholder="https://www.amazon.in/dp/... or https://www.flipkart.com/..." value="https://www.amazon.in/dp/B09XYZ123?tag=mensfithub-21" required style="border-color: #38BDF8;">
+              <div class="input-hint">Paste your Amazon, Flipkart, Myntra, or store link here. When customer clicks "BUY" on the website, this link opens directly in a new tab.</div>
+            </div>
+
+            <div class="form-full">
+              <label class="simple-label">IMAGE PHOTO URL (3:4 PORTRAIT)</label>
+              <input type="text" class="simple-input" id="newProdImage" placeholder="https://images.unsplash.com/..." value="https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=800&q=80" required>
+            </div>
+
+            <div class="form-full">
+              <label class="simple-label">SIZING / FIT ADVICE NOTE (OPTIONAL)</label>
+              <input type="text" class="simple-input" id="newProdFitAdvice" placeholder="e.g. Boxy drop shoulder — take your true size.">
+            </div>
+          </div>
+
+          <button type="submit" class="btn-submit-main">
+            💾 SAVE CLOTHING ITEM
+          </button>
+        </form>
+      </div>
+
+      <!-- Manage Existing Clothes & Update Links -->
+      <div class="items-table-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <h3 style="font-family: var(--font-display); font-size: 1.15rem; margin: 0;">ALL WARDROBE ITEMS & BUY LINKS</h3>
+          <span style="font-family: var(--font-mono); font-size: 11px; color: #A1A1AA;" id="totalProductsCount">Loading items...</span>
+        </div>
+        <p style="font-size: 12px; color: #71717A; margin-top: 0; margin-bottom: 1.25rem;">
+          You can edit the <strong>Buy Link</strong> for any product directly below. Any change updates the customer website immediately!
+        </p>
+
+        <div class="items-grid" id="existingProductsGrid">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+
+    </section>
+
+    <!-- =======================================================
+         TAB 3: SIMPLE STATS
+         ======================================================= -->
+    <section class="tab-content" id="tabStats">
+      <div class="admin-panel-card">
+        <div class="panel-header">
+          <h2 class="panel-title">OVERVIEW & OUTBOUND BUY CLICKS</h2>
+          <p class="panel-desc">Real-time stats showing customer engagement and clicks on your buy buttons.</p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;">
+          <div style="background: #18181E; padding: 1.5rem; border-radius: 8px; border: 1px solid #27272A;">
+            <div style="font-family: var(--font-mono); font-size: 11px; color: #A1A1AA;">TOTAL REEL VIEWS</div>
+            <div style="font-family: var(--font-display); font-size: 2rem; font-weight: 800; margin-top: 0.5rem;" id="statTotalViews">98,140</div>
+          </div>
+
+          <div style="background: #18181E; padding: 1.5rem; border-radius: 8px; border: 1px solid #27272A;">
+            <div style="font-family: var(--font-mono); font-size: 11px; color: #10B981;">TOTAL BUY BUTTON CLICKS</div>
+            <div style="font-family: var(--font-display); font-size: 2rem; font-weight: 800; color: #10B981; margin-top: 0.5rem;" id="statTotalClicks">14</div>
+          </div>
+
+          <div style="background: #18181E; padding: 1.5rem; border-radius: 8px; border: 1px solid #27272A;">
+            <div style="font-family: var(--font-mono); font-size: 11px; color: #38BDF8;">TOTAL ACTIVE FITS</div>
+            <div style="font-family: var(--font-display); font-size: 2rem; font-weight: 800; color: #38BDF8; margin-top: 0.5rem;" id="statTotalFits">10</div>
+          </div>
+        </div>
+
+        <div style="margin-top: 2rem;">
+          <h4 style="font-family: var(--font-display); margin-bottom: 0.75rem;">TOP CLICKED FITS</h4>
+          <div id="topClickedFitsList" style="display: flex; flex-direction: column; gap: 0.5rem;">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =======================================================
+         TAB 4: CUSTOMERS & ORDERS (CUSTOMER INTELLIGENCE & HISTORY)
+         ======================================================= -->
+    <section class="tab-content" id="tabCustomers">
+      <div class="admin-panel-card">
+        <div class="panel-header" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h2 class="panel-title">👥 CUSTOMER DIRECTORY & ORDER HISTORY</h2>
+            <p class="panel-desc">Real-time log of customers who have logged in/signed up, their current in-transit orders, and complete past purchase history.</p>
+          </div>
+          <button type="button" onclick="loadCustomers()" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: #27272A; border: 1px solid #3F3F46; border-radius: 6px; color: #FFFFFF; font-family: var(--font-mono); font-size: 11px; cursor: pointer;">
+            <span>🔄 REFRESH LIVE DATA</span>
+          </button>
+        </div>
+
+        <!-- CRM Metrics Header -->
+        <div class="crm-stats-grid">
+          <div class="crm-stat-box">
+            <div class="crm-stat-title">REGISTERED CUSTOMERS</div>
+            <div class="crm-stat-val" style="color: #FFFFFF;" id="crmTotalCustomers">0</div>
+          </div>
+          <div class="crm-stat-box">
+            <div class="crm-stat-title">CURRENT ACTIVE ORDERS</div>
+            <div class="crm-stat-val" style="color: #FBBF24;" id="crmActiveOrders">0</div>
+          </div>
+          <div class="crm-stat-box">
+            <div class="crm-stat-title">PAST ORDERS DELIVERED</div>
+            <div class="crm-stat-val" style="color: #34D399;" id="crmPastOrders">0</div>
+          </div>
+          <div class="crm-stat-box">
+            <div class="crm-stat-title">TOTAL LIFETIME REVENUE</div>
+            <div class="crm-stat-val" style="color: #38BDF8;" id="crmTotalRevenue">₹0</div>
+          </div>
+        </div>
+
+        <!-- Search & Filter Bar -->
+        <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+          <input type="text" id="customerSearchInput" placeholder="🔍 Search customer by name, email, or phone..." oninput="handleCustomerSearch()" class="simple-input" style="flex: 1; min-width: 260px;">
+          <select id="customerFilterSelect" onchange="handleCustomerSearch()" class="simple-input" style="width: auto; min-width: 180px;">
+            <option value="ALL">All Customers</option>
+            <option value="ACTIVE_ORDER">Has Current Active Order</option>
+            <option value="PAST_ORDERS">Has Past Order History</option>
+          </select>
+        </div>
+
+        <!-- Customer List Container -->
+        <div id="customersListContainer">
+          <!-- Dynamically populated by renderCustomers() -->
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Customer Order & Profile Dossier Modal -->
+  <div class="customer-modal-backdrop" id="customerModalBackdrop">
+    <div class="customer-modal-content">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; border-bottom: 1px solid #27272A; padding-bottom: 1rem;">
+        <div style="display: flex; align-items: center; gap: 1rem;">
+          <div class="cust-avatar-box" id="modalCustAvatar" style="width: 52px; height: 52px; font-size: 18px;">AM</div>
+          <div>
+            <h3 id="modalCustName" style="margin: 0; font-family: var(--font-display); font-size: 1.3rem; font-weight: 800;">Alex Morgan</h3>
+            <div style="display: flex; gap: 0.5rem; align-items: center; margin-top: 4px; flex-wrap: wrap;">
+              <span id="modalCustEmail" style="font-family: var(--font-mono); font-size: 12px; color: #A1A1AA;">alex.morgan@gmail.com</span>
+              <span id="modalCustPhone" style="font-family: var(--font-mono); font-size: 11px; color: #71717A;">• +91 98201 44521</span>
+              <span id="modalCustProvider" class="cust-badge cust-badge-google">GOOGLE</span>
+            </div>
+          </div>
+        </div>
+        <button onclick="closeCustomerModal()" style="background: none; border: none; color: #71717A; font-size: 20px; cursor: pointer; padding: 4px;">✕</button>
+      </div>
+
+      <!-- Quick Lifetime Stats Bar -->
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; background: #181820; padding: 0.85rem; border-radius: 8px; border: 1px solid #27272A; margin-bottom: 1.5rem; text-align: center;">
+        <div>
+          <div style="font-family: var(--font-mono); font-size: 10px; color: #71717A;">TOTAL ORDERS</div>
+          <div id="modalCustTotalOrders" style="font-family: var(--font-display); font-size: 1.2rem; font-weight: 800; color: #FFFFFF; margin-top: 2px;">0</div>
+        </div>
+        <div>
+          <div style="font-family: var(--font-mono); font-size: 10px; color: #71717A;">ACTIVE ORDERS</div>
+          <div id="modalCustActiveOrders" style="font-family: var(--font-display); font-size: 1.2rem; font-weight: 800; color: #FBBF24; margin-top: 2px;">0</div>
+        </div>
+        <div>
+          <div style="font-family: var(--font-mono); font-size: 10px; color: #71717A;">PAST ORDERS</div>
+          <div id="modalCustPastOrders" style="font-family: var(--font-display); font-size: 1.2rem; font-weight: 800; color: #34D399; margin-top: 2px;">0</div>
+        </div>
+        <div>
+          <div style="font-family: var(--font-mono); font-size: 10px; color: #71717A;">LIFETIME SPEND</div>
+          <div id="modalCustTotalSpend" style="font-family: var(--font-display); font-size: 1.2rem; font-weight: 800; color: #38BDF8; margin-top: 2px;">₹0</div>
+        </div>
+      </div>
+
+      <!-- SECTION 1: CURRENT ACTIVE ORDERS -->
+      <div style="margin-bottom: 1.75rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+          <h4 style="margin: 0; font-family: var(--font-display); font-size: 1.05rem; font-weight: 800; letter-spacing: 0.05em; color: #FBBF24;">
+            📦 CURRENT ACTIVE ORDER ("ISKA ABHI KY ORDER HAI")
+          </h4>
+        </div>
+        <div id="modalCurrentOrdersList">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <!-- SECTION 2: PAST ORDER HISTORY -->
+      <div style="margin-bottom: 1.75rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+          <h4 style="margin: 0; font-family: var(--font-display); font-size: 1.05rem; font-weight: 800; letter-spacing: 0.05em; color: #34D399;">
+            📜 PAST ORDER HISTORY ("ISNE PHLE KY MNGVAAYA THAA")
+          </h4>
+        </div>
+        <div id="modalPastOrdersList">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <!-- SECTION 3: ATTACH / SIMULATE NEW ORDER (FOR TESTING) -->
+      <div style="border-top: 1px solid #27272A; padding-top: 1.25rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none;" onclick="toggleAddOrderForm()">
+          <span style="font-family: var(--font-mono); font-size: 11px; color: #38BDF8; font-weight: 600;">➕ ATTACH / RECORD NEW ORDER FOR THIS CUSTOMER</span>
+          <span id="addOrderToggleIcon" style="font-family: var(--font-mono); font-size: 11px; color: #38BDF8;">[EXPAND +]</span>
+        </div>
+
+        <form id="modalAddOrderForm" onsubmit="handleManualOrderSubmit(event)" style="display: none; margin-top: 1rem; background: #181820; padding: 1rem; border-radius: 8px; border: 1px solid #27272A;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
+            <div>
+              <label class="simple-label">SELECT PRODUCT</label>
+              <select id="manualOrderProdSelect" class="simple-input" onchange="handleManualProductSelect()">
+                <!-- Populated dynamically with DB products -->
+              </select>
+            </div>
+            <div>
+              <label class="simple-label">RETAILER LINK</label>
+              <select id="manualOrderRetailer" class="simple-input">
+                <option value="AMAZON">Amazon</option>
+                <option value="FLIPKART">Flipkart</option>
+                <option value="MYNTRA">Myntra</option>
+                <option value="AJIO">Ajio</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
+            <div>
+              <label class="simple-label">PRICE (INR ₹)</label>
+              <input type="number" id="manualOrderPrice" class="simple-input" required value="3499">
+            </div>
+            <div>
+              <label class="simple-label">SIZE</label>
+              <input type="text" id="manualOrderSize" class="simple-input" value="L">
+            </div>
+            <div>
+              <label class="simple-label">INITIAL STATUS</label>
+              <select id="manualOrderStatus" class="simple-input">
+                <option value="IN_TRANSIT">In Transit (Active)</option>
+                <option value="PROCESSING">Processing (Active)</option>
+                <option value="OUT_FOR_DELIVERY">Out for Delivery</option>
+                <option value="DELIVERED">Delivered (Past)</option>
+              </select>
+            </div>
+          </div>
+
+          <button type="submit" style="width: 100%; background: #38BDF8; color: #000000; border: none; border-radius: 6px; padding: 0.65rem; font-family: var(--font-mono); font-size: 11px; font-weight: 700; cursor: pointer;">
+            RECORD & ATTACH ORDER
+          </button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Live Toast Notification -->
+  <div class="save-alert" id="saveAlert">
+    CHANGES SAVED & SYNCED TO CUSTOMER SITE!
+  </div>
+
+  <!-- Load Shared DB -->
+  <script src="packages/database/db.js"></script>
+
+  <script>
+    let selectedGarmentIds = new Set();
+
+    // ==========================================
+    // REAL-TIME PASSWORD PROTECTION LOGIC
+    // ==========================================
+    function getAdminPassword() {
+      return localStorage.getItem('mfh_admin_realtime_password') || 'admin123';
+    }
+
+    function checkAuthStatus() {
+      const isAuth = sessionStorage.getItem('mfh_admin_authenticated');
+      const lockOverlay = document.getElementById('adminLockOverlay');
+      if (isAuth === 'true') {
+        lockOverlay.classList.add('unlocked');
+      } else {
+        lockOverlay.classList.remove('unlocked');
+        setTimeout(() => document.getElementById('passcodeInput').focus(), 100);
+      }
+    }
+
+    function handlePasswordUnlock(e) {
+      e.preventDefault();
+      const input = document.getElementById('passcodeInput');
+      const errorMsg = document.getElementById('lockErrorMsg');
+      const entered = input.value.trim();
+
+      const correctPassword = getAdminPassword();
+
+      if (entered === correctPassword) {
+        sessionStorage.setItem('mfh_admin_authenticated', 'true');
+        document.getElementById('adminLockOverlay').classList.add('unlocked');
+        errorMsg.textContent = '';
+        input.value = '';
+        showNotification('PANEL UNLOCKED // WELCOME CREATOR');
+      } else {
+        errorMsg.textContent = '❌ INCORRECT PASSCODE. PLEASE TRY AGAIN.';
+        input.style.borderColor = '#EF4444';
+        setTimeout(() => input.style.borderColor = '#3F3F46', 1500);
+      }
+    }
+
+    function lockAdminPanel() {
+      sessionStorage.removeItem('mfh_admin_authenticated');
+      checkAuthStatus();
+      showNotification('PANEL LOCKED');
+    }
+
+    // ==========================================
+    // SECURITY CONFIG & FORGOT PASSWORD LOGIC
+    // ==========================================
+    function getSecurityConfig() {
+      const saved = localStorage.getItem('mfh_admin_security_config');
+      if (saved) {
+        try { return JSON.parse(saved); } catch (e) {}
+      }
+      return {
+        name: 'admin',
+        school: 'delhi public school',
+        city: 'mumbai'
+      };
+    }
+
+    function switchToRecoveryView() {
+      const err = document.getElementById('recoveryErrorMsg');
+      err.textContent = '';
+      document.getElementById('recoveryAnsName').value = '';
+      document.getElementById('recoveryAnsSchool').value = '';
+      document.getElementById('recoveryAnsCity').value = '';
+      document.getElementById('recoveryNewPass').value = '';
+      document.getElementById('recoveryConfirmPass').value = '';
+      document.getElementById('lockPasscodeView').style.display = 'none';
+      document.getElementById('lockRecoveryView').style.display = 'block';
+      setTimeout(() => document.getElementById('recoveryAnsName').focus(), 100);
+    }
+
+    function switchToPasscodeView() {
+      document.getElementById('lockRecoveryView').style.display = 'none';
+      document.getElementById('lockPasscodeView').style.display = 'block';
+      setTimeout(() => document.getElementById('passcodeInput').focus(), 100);
+    }
+
+    function handleSecurityRecoverySubmit(e) {
+      e.preventDefault();
+      const cfg = getSecurityConfig();
+      const ansName = document.getElementById('recoveryAnsName').value.trim().toLowerCase();
+      const ansSchool = document.getElementById('recoveryAnsSchool').value.trim().toLowerCase();
+      const ansCity = document.getElementById('recoveryAnsCity').value.trim().toLowerCase();
+      const newPass = document.getElementById('recoveryNewPass').value.trim();
+      const confirmPass = document.getElementById('recoveryConfirmPass').value.trim();
+      const err = document.getElementById('recoveryErrorMsg');
+
+      // Verify Answers against config (case-insensitive)
+      if (ansName !== cfg.name.toLowerCase() || 
+          ansSchool !== cfg.school.toLowerCase() || 
+          ansCity !== cfg.city.toLowerCase()) {
+        err.textContent = '❌ Security answers do not match our records. Please try again.';
+        return;
+      }
+
+      if (newPass.length < 4) {
+        err.textContent = '❌ New passcode must be at least 4 characters long.';
+        return;
+      }
+
+      if (newPass !== confirmPass) {
+        err.textContent = '❌ New passcodes do not match.';
+        return;
+      }
+
+      // Save new passcode in real-time and authenticate
+      localStorage.setItem('mfh_admin_realtime_password', newPass);
+      sessionStorage.setItem('mfh_admin_authenticated', 'true');
+      document.getElementById('adminLockOverlay').classList.add('unlocked');
+      switchToPasscodeView();
+      showNotification('✅ PASSCODE RESET & PANEL UNLOCKED!');
+    }
+
+    function toggleSecurityFields() {
+      const fields = document.getElementById('securityConfigFields');
+      const icon = document.getElementById('secToggleIcon');
+      if (fields.style.display === 'none' || !fields.style.display) {
+        fields.style.display = 'flex';
+        icon.textContent = '[HIDE -]';
+        const cfg = getSecurityConfig();
+        document.getElementById('cfgAnsName').value = cfg.name;
+        document.getElementById('cfgAnsSchool').value = cfg.school;
+        document.getElementById('cfgAnsCity').value = cfg.city;
+      } else {
+        fields.style.display = 'none';
+        icon.textContent = '[SHOW +]';
+      }
+    }
+
+    function promptChangePassword() {
+      const modal = document.getElementById('pwdChangeModal');
+      const err = document.getElementById('pwdModalError');
+      err.textContent = '';
+      document.getElementById('currentPassInput').value = '';
+      document.getElementById('newPassInput').value = '';
+      document.getElementById('confirmPassInput').value = '';
+      document.getElementById('securityConfigFields').style.display = 'none';
+      document.getElementById('secToggleIcon').textContent = '[SHOW +]';
+      modal.classList.add('open');
+      setTimeout(() => document.getElementById('currentPassInput').focus(), 100);
+    }
+
+    function closeChangePasswordModal() {
+      const modal = document.getElementById('pwdChangeModal');
+      modal.classList.remove('open');
+    }
+
+    function handlePasswordChangeSubmit(e) {
+      e.preventDefault();
+      const current = getAdminPassword();
+      const enteredCurrent = document.getElementById('currentPassInput').value.trim();
+      const newPass = document.getElementById('newPassInput').value.trim();
+      const confirmPass = document.getElementById('confirmPassInput').value.trim();
+      const err = document.getElementById('pwdModalError');
+
+      if (enteredCurrent !== current) {
+        err.textContent = '❌ Current passcode is incorrect.';
+        return;
+      }
+
+      if (newPass.length < 4) {
+        err.textContent = '❌ New passcode must be at least 4 characters long.';
+        return;
+      }
+
+      if (newPass !== confirmPass) {
+        err.textContent = '❌ New passcodes do not match.';
+        return;
+      }
+
+      localStorage.setItem('mfh_admin_realtime_password', newPass);
+
+      // Check if security questions were customized
+      const cfgName = document.getElementById('cfgAnsName').value.trim();
+      const cfgSchool = document.getElementById('cfgAnsSchool').value.trim();
+      const cfgCity = document.getElementById('cfgAnsCity').value.trim();
+      if (cfgName || cfgSchool || cfgCity) {
+        const currentCfg = getSecurityConfig();
+        const newCfg = {
+          name: cfgName || currentCfg.name,
+          school: cfgSchool || currentCfg.school,
+          city: cfgCity || currentCfg.city
+        };
+        localStorage.setItem('mfh_admin_security_config', JSON.stringify(newCfg));
+      }
+
+      closeChangePasswordModal();
+      showNotification('✅ PASSCODE & SECURITY SETTINGS UPDATED!');
+    }
+
+    // ==========================================
+    // TAB NAVIGATION
+    // ==========================================
+    function switchAdminTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.admin-nav-btn').forEach(b => b.classList.remove('active'));
+      
+      const target = document.getElementById(tabId);
+      if (target) target.classList.add('active');
+
+      const activeBtn = Array.from(document.querySelectorAll('.admin-nav-btn')).find(b => b.getAttribute('onclick').includes(tabId));
+      if (activeBtn) activeBtn.classList.add('active');
+
+      if (tabId === 'tabStats') loadStats();
+      if (tabId === 'tabCustomers') loadCustomers();
+    }
+
+    function showNotification(msg) {
+      const el = document.getElementById('saveAlert');
+      el.textContent = msg;
+      el.classList.add('show');
+      setTimeout(() => el.classList.remove('show'), 2200);
+    }
+
+    // ==========================================
+    // REEL INGESTION LOGIC
+    // ==========================================
+    function renderReelGarmentsSelector() {
+      const container = document.getElementById('reelClothesSelector');
+      if (!container || !window.MFH_DATABASE) return;
+      container.innerHTML = '';
+
+      const products = window.MFH_DATABASE.products;
+      products.forEach(p => {
+        const box = document.createElement('div');
+        box.className = `picker-box ${selectedGarmentIds.has(p.id) ? 'checked' : ''}`;
+        box.innerHTML = `
+          <img src="${p.primaryImage}" class="picker-img" alt="${p.name}">
+          <div style="flex: 1; min-width: 0;">
+            <div style="font-weight: 600; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${p.name}</div>
+            <div style="font-family: var(--font-mono); font-size: 9px; color: #A1A1AA;">${p.brand} • ₹${p.priceEstimate}</div>
+          </div>
+          <div style="font-family: var(--font-mono); font-size: 12px; color: ${selectedGarmentIds.has(p.id) ? '#10B981' : '#52525B'}; font-weight: 700;">
+            ${selectedGarmentIds.has(p.id) ? '✓' : '+'}
+          </div>
+        `;
+
+        box.onclick = () => {
+          if (selectedGarmentIds.has(p.id)) {
+            selectedGarmentIds.delete(p.id);
+          } else {
+            selectedGarmentIds.add(p.id);
+          }
+          renderReelGarmentsSelector();
+          document.getElementById('taggedClothesCount').textContent = `${selectedGarmentIds.size} items selected`;
+        };
+
+        container.appendChild(box);
+      });
+    }
+
+    function renderExistingReels() {
+      const container = document.getElementById('existingReelsList');
+      if (!container || !window.MFH_DATABASE) return;
+      container.innerHTML = '';
+
+      const reels = window.MFH_DATABASE.getAllReels();
+      reels.forEach(r => {
+        const row = document.createElement('div');
+        row.style.cssText = 'display: flex; align-items: center; justify-content: space-between; padding: 0.85rem; background: #18181E; border: 1px solid #27272A; border-radius: 6px;';
+        row.innerHTML = `
+          <div style="display: flex; align-items: center; gap: 1rem;">
+            <img src="${r.posterUrl}" style="width: 44px; height: 58px; object-fit: cover; border-radius: 4px;" alt="${r.title}">
+            <div>
+              <div style="font-weight: 700; font-size: 13px;">${r.title}</div>
+              <div style="font-family: var(--font-mono); font-size: 10px; color: #A1A1AA; margin-top: 2px;">
+                ${r.itemIds ? r.itemIds.length : 0} Clothes Tagged • ${(r.tags || []).join(', ')}
+              </div>
+            </div>
+          </div>
+          <button class="btn-delete-simple" onclick="deleteReel('${r.id}')">DELETE REEL</button>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    function deleteReel(id) {
+      if (confirm('Delete this reel from the customer storefront?')) {
+        window.MFH_DATABASE.deleteReel(id);
+        renderExistingReels();
+        showNotification('REEL DELETED & SYNCED TO WEBSITE!');
+      }
+    }
+
+    function handleReelSubmit(e) {
+      e.preventDefault();
+      const title = document.getElementById('newReelTitle').value.trim();
+      const videoUrl = document.getElementById('newReelVideo').value.trim();
+      const posterUrl = document.getElementById('newReelPoster').value.trim();
+      const caption = document.getElementById('newReelCaption').value.trim();
+      const tags = document.getElementById('newReelTags').value.trim();
+
+      if (!title || !videoUrl) return;
+
+      window.MFH_DATABASE.createReel({
+        title,
+        videoUrl,
+        posterUrl,
+        caption,
+        tags,
+        isPublished: true,
+        itemIds: Array.from(selectedGarmentIds)
+      });
+
+      document.getElementById('newReelTitle').value = '';
+      selectedGarmentIds.clear();
+      renderReelGarmentsSelector();
+      renderExistingReels();
+      document.getElementById('taggedClothesCount').textContent = '0 items selected';
+
+      showNotification('REEL PUBLISHED! VISIBLE ON STOREFRONT NOW.');
+    }
+
+    // ==========================================
+    // CLOTHES & BUY LINK LOGIC
+    // ==========================================
+    function renderExistingProducts() {
+      const container = document.getElementById('existingProductsGrid');
+      const totalCount = document.getElementById('totalProductsCount');
+      if (!container || !window.MFH_DATABASE) return;
+      container.innerHTML = '';
+
+      const products = window.MFH_DATABASE.products;
+      if (totalCount) totalCount.textContent = `${products.length} Items Active`;
+
+      products.forEach(p => {
+        const currentLink = (p.affiliateLinks && p.affiliateLinks[0]) ? (p.affiliateLinks[0].affiliateUrl || p.affiliateLinks[0].rawUrl) : '';
+
+        const card = document.createElement('div');
+        card.className = 'product-manage-card';
+        card.innerHTML = `
+          <img src="${p.primaryImage}" class="product-manage-img" alt="${p.name}">
+          <div class="product-manage-info">
+            <div>
+              <div style="display: flex; justify-content: space-between;">
+                <div style="font-family: var(--font-mono); font-size: 10px; color: #A1A1AA;">${p.brand} • ${p.category}</div>
+                <button class="btn-delete-simple" onclick="deleteProduct('${p.id}')">DELETE</button>
+              </div>
+              <div style="font-weight: 700; font-size: 12px; margin-top: 2px;">${p.name}</div>
+              <div style="font-family: var(--font-mono); font-size: 11px; color: #10B981; font-weight: 700; margin-top: 2px;">₹ ${Number(p.priceEstimate).toLocaleString('en-IN')}</div>
+            </div>
+
+            <div>
+              <label style="font-family: var(--font-mono); font-size: 9px; color: #71717A; text-transform: uppercase;">Direct Buy Link:</label>
+              <div class="buy-link-input-row">
+                <input type="text" class="simple-input" style="font-size: 11px; padding: 0.35rem 0.5rem;" value="${currentLink}" id="link_input_${p.id}">
+                <button class="btn-update-link" onclick="updateBuyLink('${p.id}')">SAVE LINK</button>
+              </div>
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function updateBuyLink(id) {
+      const input = document.getElementById(`link_input_${id}`);
+      if (!input) return;
+      const newLink = input.value.trim();
+
+      window.MFH_DATABASE.updateProduct(id, { buyLink: newLink });
+      showNotification('BUY LINK UPDATED! STOREFRONT SYNCED.');
+    }
+
+    function deleteProduct(id) {
+      if (confirm('Delete this clothing item?')) {
+        window.MFH_DATABASE.deleteProduct(id);
+        renderExistingProducts();
+        renderReelGarmentsSelector();
+        showNotification('ITEM DELETED!');
+      }
+    }
+
+    function handleProductSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('newProdName').value.trim();
+      const brand = document.getElementById('newProdBrand').value.trim();
+      const category = document.getElementById('newProdCategory').value;
+      const price = document.getElementById('newProdPrice').value;
+      const buyLink = document.getElementById('newProdBuyLink').value.trim();
+      const primaryImage = document.getElementById('newProdImage').value.trim();
+      const fitAdvice = document.getElementById('newProdFitAdvice').value.trim();
+
+      if (!name || !brand || !buyLink || !primaryImage) return;
+
+      window.MFH_DATABASE.createProduct({
+        name,
+        brand,
+        category,
+        priceEstimate: parseFloat(price) || 2999,
+        buyLink,
+        primaryImage,
+        fitAdvice
+      });
+
+      document.getElementById('newProdName').value = '';
+      document.getElementById('newProdBrand').value = '';
+
+      renderExistingProducts();
+      renderReelGarmentsSelector();
+      showNotification('CLOTHING ITEM SAVED & SYNCED TO WEBSITE!');
+    }
+
+    function loadStats() {
+      if (!window.MFH_DATABASE) return;
+      const data = window.MFH_DATABASE.getAnalytics();
+      
+      document.getElementById('statTotalViews').textContent = Number(data.totalViews).toLocaleString();
+      document.getElementById('statTotalClicks').textContent = Number(data.totalClicks).toLocaleString();
+      document.getElementById('statTotalFits').textContent = window.MFH_DATABASE.products.length;
+
+      const topList = document.getElementById('topClickedFitsList');
+      if (topList) {
+        topList.innerHTML = '';
+        data.topFits.forEach((fit, idx) => {
+          const row = document.createElement('div');
+          row.style.cssText = 'display: flex; align-items: center; justify-content: space-between; padding: 0.65rem 1rem; background: #141419; border: 1px solid #27272A; border-radius: 6px; font-family: var(--font-mono); font-size: 11px;';
+          row.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <span style="font-weight: 800; color: #71717A;">#${idx + 1}</span>
+              <img src="${fit.image}" style="width: 28px; height: 36px; object-fit: cover; border-radius: 2px;">
+              <span style="font-weight: 600;">${fit.name}</span>
+            </div>
+            <span style="color: #10B981; font-weight: 700;">${fit.clicks} CLICKS</span>
+          `;
+          topList.appendChild(row);
+        });
+      }
+    }
+
+    // ==========================================
+    // CUSTOMER INTELLIGENCE & ORDER HISTORY LOGIC
+    // ==========================================
+    let currentViewingCustomerId = null;
+
+    function loadCustomers() {
+      if (!window.MFH_DATABASE) return;
+      const customers = window.MFH_DATABASE.getCustomers();
+
+      // Aggregate Metrics
+      const totalCustomers = customers.length;
+      let activeOrdersCount = 0;
+      let pastOrdersCount = 0;
+      let totalRevenue = 0;
+
+      customers.forEach(c => {
+        activeOrdersCount += (c.currentOrdersCount || 0);
+        pastOrdersCount += (c.pastOrdersCount || 0);
+        totalRevenue += (c.totalSpent || 0);
+      });
+
+      const elTotalCust = document.getElementById('crmTotalCustomers');
+      const elActiveOrd = document.getElementById('crmActiveOrders');
+      const elPastOrd = document.getElementById('crmPastOrders');
+      const elTotalRev = document.getElementById('crmTotalRevenue');
+
+      if (elTotalCust) elTotalCust.textContent = totalCustomers;
+      if (elActiveOrd) elActiveOrd.textContent = activeOrdersCount;
+      if (elPastOrd) elPastOrd.textContent = pastOrdersCount;
+      if (elTotalRev) elTotalRev.textContent = '₹' + totalRevenue.toLocaleString('en-IN');
+
+      handleCustomerSearch();
+    }
+
+    function handleCustomerSearch() {
+      if (!window.MFH_DATABASE) return;
+      const searchInput = document.getElementById('customerSearchInput');
+      const filterSelect = document.getElementById('customerFilterSelect');
+      const q = searchInput ? searchInput.value.trim().toLowerCase() : '';
+      const filter = filterSelect ? filterSelect.value : 'ALL';
+
+      let list = window.MFH_DATABASE.getCustomers(q);
+
+      if (filter === 'ACTIVE_ORDER') {
+        list = list.filter(c => (c.currentOrdersCount || 0) > 0);
+      } else if (filter === 'PAST_ORDERS') {
+        list = list.filter(c => (c.pastOrdersCount || 0) > 0);
+      }
+
+      renderCustomers(list);
+    }
+
+    function renderCustomers(list) {
+      const container = document.getElementById('customersListContainer');
+      if (!container) return;
+
+      if (!list || list.length === 0) {
+        container.innerHTML = `
+          <div style="text-align: center; padding: 3rem 1rem; color: #71717A; font-family: var(--font-mono); font-size: 13px;">
+            NO MATCHING CUSTOMERS FOUND.
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = '';
+      list.forEach(c => {
+        const initials = c.name ? c.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'CU';
+        const card = document.createElement('div');
+        card.className = 'customer-list-card';
+
+        // Current order summary snippet
+        let currentOrderBadge = '<span style="color: #71717A; font-size: 11px; font-family: var(--font-mono);">— No Active In-Transit Orders</span>';
+        if (c.currentOrders && c.currentOrders.length > 0) {
+          const firstOrd = c.currentOrders[0];
+          currentOrderBadge = `
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 4px; flex-wrap: wrap;">
+              <span class="order-status-badge order-status-active">📦 CURRENT: ${firstOrd.statusLabel || 'In Transit'}</span>
+              <span style="font-size: 11px; font-weight: 600; color: #F4F4F5;">${firstOrd.productName} (₹${Number(firstOrd.price).toLocaleString('en-IN')})</span>
+            </div>
+          `;
+        }
+
+        // Last Login formatting
+        let lastLoginText = 'Recently';
+        if (c.lastLoginAt) {
+          const diffMin = Math.round((Date.now() - new Date(c.lastLoginAt).getTime()) / (1000 * 60));
+          if (diffMin < 60) lastLoginText = `${diffMin}m ago`;
+          else if (diffMin < 1440) lastLoginText = `${Math.round(diffMin / 60)}h ago`;
+          else lastLoginText = `${Math.round(diffMin / 1440)}d ago`;
+        }
+
+        const providerBadge = c.provider === 'GOOGLE' 
+          ? '<span class="cust-badge cust-badge-google">GOOGLE</span>' 
+          : '<span class="cust-badge cust-badge-email">EMAIL</span>';
+
+        card.innerHTML = `
+          <div style="display: flex; align-items: center; gap: 1rem; flex: 1;">
+            <div class="cust-avatar-box">${initials}</div>
+            <div>
+              <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                <h3 style="margin: 0; font-family: var(--font-display); font-size: 1.15rem; font-weight: 700; color: #FFFFFF;">${c.name}</h3>
+                ${providerBadge}
+                <span style="font-family: var(--font-mono); font-size: 10px; color: #71717A;">Last active: ${lastLoginText}</span>
+              </div>
+              <div style="font-family: var(--font-mono); font-size: 11px; color: #A1A1AA; margin-top: 3px;">
+                ${c.email} • ${c.phone || '+91 Not provided'}
+              </div>
+              ${currentOrderBadge}
+            </div>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;">
+            <div style="text-align: right;">
+              <div style="font-family: var(--font-mono); font-size: 10px; color: #71717A; text-transform: uppercase;">ORDERS SUMMARY</div>
+              <div style="font-family: var(--font-display); font-size: 13px; font-weight: 700; color: #34D399; margin-top: 2px;">
+                ${c.pastOrdersCount} Past Delivered
+              </div>
+              <div style="font-family: var(--font-mono); font-size: 11px; color: #38BDF8;">
+                Total: ₹${(c.totalSpent || 0).toLocaleString('en-IN')}
+              </div>
+            </div>
+
+            <button type="button" onclick="openCustomerModal('${c.id}')" style="background: #FFFFFF; color: #000000; border: none; border-radius: 6px; padding: 0.55rem 1rem; font-family: var(--font-mono); font-size: 11px; font-weight: 700; cursor: pointer; white-space: nowrap;">
+              VIEW ORDERS & PROFILE →
+            </button>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+    }
+
+    function openCustomerModal(customerId) {
+      if (!window.MFH_DATABASE) return;
+      const c = window.MFH_DATABASE.getCustomerById(customerId);
+      if (!c) return;
+
+      currentViewingCustomerId = customerId;
+
+      // Update Modal Header
+      const initials = c.name ? c.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'CU';
+      document.getElementById('modalCustAvatar').textContent = initials;
+      document.getElementById('modalCustName').textContent = c.name;
+      document.getElementById('modalCustEmail').textContent = c.email;
+      document.getElementById('modalCustPhone').textContent = '• ' + (c.phone || 'Phone not set');
+      
+      const badgeEl = document.getElementById('modalCustProvider');
+      badgeEl.className = c.provider === 'GOOGLE' ? 'cust-badge cust-badge-google' : 'cust-badge cust-badge-email';
+      badgeEl.textContent = c.provider;
+
+      document.getElementById('modalCustTotalOrders').textContent = c.totalOrdersCount;
+      document.getElementById('modalCustActiveOrders').textContent = c.currentOrdersCount;
+      document.getElementById('modalCustPastOrders').textContent = c.pastOrdersCount;
+      document.getElementById('modalCustTotalSpend').textContent = '₹' + (c.totalSpent || 0).toLocaleString('en-IN');
+
+      // Populate CURRENT ACTIVE ORDERS ("Iska Ky Order Hai")
+      const currContainer = document.getElementById('modalCurrentOrdersList');
+      currContainer.innerHTML = '';
+      if (!c.currentOrders || c.currentOrders.length === 0) {
+        currContainer.innerHTML = `
+          <div style="background: #181820; border: 1px dashed #2E2E36; border-radius: 8px; padding: 1.25rem; text-align: center; color: #71717A; font-family: var(--font-mono); font-size: 11px;">
+            NO ACTIVE ORDERS IN-TRANSIT. Customer has not placed a new order recently.
+          </div>
+        `;
+      } else {
+        c.currentOrders.forEach(ord => {
+          const ordBox = document.createElement('div');
+          ordBox.className = 'order-card-detail';
+          ordBox.innerHTML = `
+            <img src="${ord.productImage}" class="order-card-img" alt="${ord.productName}">
+            <div style="flex: 1;">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; flex-wrap: wrap;">
+                <div>
+                  <div style="font-family: var(--font-display); font-size: 1rem; font-weight: 700; color: #FFFFFF;">${ord.productName}</div>
+                  <div style="font-family: var(--font-mono); font-size: 11px; color: #A1A1AA; margin-top: 2px;">
+                    ${ord.brand} • Size: ${ord.size || 'Standard'} • Retailer: <strong style="color: #38BDF8;">${ord.retailer}</strong>
+                  </div>
+                </div>
+                <div style="text-align: right;">
+                  <div style="font-family: var(--font-display); font-size: 1.1rem; font-weight: 800; color: #10B981;">₹${Number(ord.price).toLocaleString('en-IN')}</div>
+                  <span class="order-status-badge order-status-active">${ord.statusLabel || 'IN TRANSIT'}</span>
+                </div>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.75rem; border-top: 1px solid #27272A; padding-top: 0.5rem; font-family: var(--font-mono); font-size: 10px; color: #71717A; flex-wrap: wrap; gap: 0.5rem;">
+                <div>
+                  <span>Order: <strong>${ord.orderNumber}</strong></span> • 
+                  <span>Tracking: <strong>${ord.trackingNumber || 'Pending'}</strong></span> • 
+                  <span style="color: #FBBF24;">${ord.deliveryDate || 'Expected in 2-3 days'}</span>
+                </div>
+                <div style="display: flex; gap: 0.5rem;">
+                  <button type="button" onclick="handleUpdateOrderStatus('${c.id}', '${ord.id}', 'DELIVERED')" style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); color: #34D399; border-radius: 4px; padding: 0.3rem 0.6rem; font-size: 10px; font-weight: 700; cursor: pointer;">
+                    ✔ MARK AS DELIVERED
+                  </button>
+                  <button type="button" onclick="handleUpdateOrderStatus('${c.id}', '${ord.id}', 'CANCELLED')" style="background: transparent; border: 1px solid rgba(239, 68, 68, 0.3); color: #EF4444; border-radius: 4px; padding: 0.3rem 0.6rem; font-size: 10px; cursor: pointer;">
+                    CANCEL
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+          currContainer.appendChild(ordBox);
+        });
+      }
+
+      // Populate PAST ORDER HISTORY ("Isne Phle Ky Mngvaaya Thaa")
+      const pastContainer = document.getElementById('modalPastOrdersList');
+      pastContainer.innerHTML = '';
+      if (!c.pastOrders || c.pastOrders.length === 0) {
+        pastContainer.innerHTML = `
+          <div style="background: #181820; border: 1px dashed #2E2E36; border-radius: 8px; padding: 1.25rem; text-align: center; color: #71717A; font-family: var(--font-mono); font-size: 11px;">
+            NO PAST ORDER HISTORY. Customer has no previously delivered orders yet.
+          </div>
+        `;
+      } else {
+        c.pastOrders.forEach(ord => {
+          const ordBox = document.createElement('div');
+          ordBox.className = 'order-card-detail';
+          ordBox.innerHTML = `
+            <img src="${ord.productImage}" class="order-card-img" alt="${ord.productName}">
+            <div style="flex: 1;">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; flex-wrap: wrap;">
+                <div>
+                  <div style="font-family: var(--font-display); font-size: 0.95rem; font-weight: 700; color: #FFFFFF;">${ord.productName}</div>
+                  <div style="font-family: var(--font-mono); font-size: 11px; color: #A1A1AA; margin-top: 2px;">
+                    ${ord.brand} • Size: ${ord.size || 'M'} • Ordered via ${ord.retailer}
+                  </div>
+                </div>
+                <div style="text-align: right;">
+                  <div style="font-family: var(--font-display); font-size: 1rem; font-weight: 700; color: #FFFFFF;">₹${Number(ord.price).toLocaleString('en-IN')}</div>
+                  <span class="order-status-badge order-status-delivered">DELIVERED</span>
+                </div>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.6rem; border-top: 1px solid #27272A; padding-top: 0.5rem; font-family: var(--font-mono); font-size: 10px; color: #71717A;">
+                <span>Order #${ord.orderNumber} • Tracking: ${ord.trackingNumber || 'TRK-COMPLETED'}</span>
+                <span style="color: #34D399;">Delivered on ${new Date(ord.deliveryDate || ord.orderDate).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+              </div>
+            </div>
+          `;
+          pastContainer.appendChild(ordBox);
+        });
+      }
+
+      // Populate Manual Product Selector
+      populateManualOrderProducts();
+
+      document.getElementById('customerModalBackdrop').classList.add('open');
+    }
+
+    function closeCustomerModal() {
+      document.getElementById('customerModalBackdrop').classList.remove('open');
+      currentViewingCustomerId = null;
+    }
+
+    function handleUpdateOrderStatus(customerId, orderId, newStatus) {
+      if (!window.MFH_DATABASE) return;
+      window.MFH_DATABASE.updateOrderStatus(customerId, orderId, newStatus);
+      showNotification('ORDER STATUS UPDATED: ' + newStatus);
+      openCustomerModal(customerId);
+      loadCustomers();
+    }
+
+    function toggleAddOrderForm() {
+      const form = document.getElementById('modalAddOrderForm');
+      const icon = document.getElementById('addOrderToggleIcon');
+      if (form.style.display === 'none') {
+        form.style.display = 'block';
+        if (icon) icon.textContent = '[COLLAPSE -]';
+      } else {
+        form.style.display = 'none';
+        if (icon) icon.textContent = '[EXPAND +]';
+      }
+    }
+
+    function populateManualOrderProducts() {
+      const select = document.getElementById('manualOrderProdSelect');
+      if (!select || !window.MFH_DATABASE) return;
+      select.innerHTML = '';
+      window.MFH_DATABASE.products.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p.id;
+        opt.textContent = `${p.name} (₹${p.priceEstimate || 2999})`;
+        opt.dataset.price = p.priceEstimate || 2999;
+        opt.dataset.image = p.primaryImage;
+        opt.dataset.brand = p.brand;
+        opt.dataset.category = p.category;
+        select.appendChild(opt);
+      });
+    }
+
+    function handleManualProductSelect() {
+      const select = document.getElementById('manualOrderProdSelect');
+      const priceInput = document.getElementById('manualOrderPrice');
+      const selected = select.options[select.selectedIndex];
+      if (selected && selected.dataset.price) {
+        priceInput.value = selected.dataset.price;
+      }
+    }
+
+    function handleManualOrderSubmit(e) {
+      e.preventDefault();
+      if (!currentViewingCustomerId || !window.MFH_DATABASE) return;
+
+      const select = document.getElementById('manualOrderProdSelect');
+      const selectedOpt = select.options[select.selectedIndex];
+      const prodId = select.value;
+      const prod = window.MFH_DATABASE.getProductById(prodId);
+
+      const price = parseFloat(document.getElementById('manualOrderPrice').value) || 2999;
+      const size = document.getElementById('manualOrderSize').value || 'L';
+      const retailer = document.getElementById('manualOrderRetailer').value;
+      const status = document.getElementById('manualOrderStatus').value;
+
+      window.MFH_DATABASE.createManualOrder(currentViewingCustomerId, {
+        productId: prodId,
+        productName: prod ? prod.name : selectedOpt.textContent,
+        productImage: prod ? prod.primaryImage : '',
+        brand: prod ? prod.brand : 'Editorial Garment',
+        category: prod ? prod.category : 'SHIRT',
+        price,
+        size,
+        retailer,
+        status
+      });
+
+      showNotification('ORDER ATTACHED TO CUSTOMER PROFILE!');
+      openCustomerModal(currentViewingCustomerId);
+      loadCustomers();
+    }
+
+    // Real-time broadcast sync with Storefront
+    if (typeof BroadcastChannel !== 'undefined') {
+      const syncChannel = new BroadcastChannel('mfh_sync_channel');
+      syncChannel.onmessage = (event) => {
+        if (window.MFH_DATABASE) window.MFH_DATABASE.reloadFromStorage();
+        loadCustomers();
+      };
+    }
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'mfh_v2_data') {
+        if (window.MFH_DATABASE) window.MFH_DATABASE.reloadFromStorage();
+        loadCustomers();
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      checkAuthStatus();
+      renderReelGarmentsSelector();
+      renderExistingReels();
+      renderExistingProducts();
+      loadCustomers();
+    });
+  </script>
+</body>
+</html>
