@@ -2,725 +2,822 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>MEN'S FIT HUB • Editorial Menswear & Curated Wardrobe</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MEN'S FIT HUB • Creator Admin Panel</title>
   
-  <meta property="og:title" content="Men's Fit Hub — Curated Menswear & Style Lookbook">
-  <meta property="og:description" content="Discover curated menswear silhouettes, tailoring, and streetwear essentials with direct verified store links.">
-  <meta property="og:type" content="website">
-  <meta property="og:image" content="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1200&q=80">
+  <link rel="stylesheet" href="../storefront/css/editorial.css">
   
-  <!-- Haute Couture Typography & Style Systems -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="apps/storefront/css/editorial.css">
-  <link rel="stylesheet" href="apps/storefront/css/feed.css">
-  <link rel="stylesheet" href="apps/storefront/css/wardrobe.css">
+  <style>
+    body {
+      background: #09090B;
+      color: #FFFFFF;
+      font-family: var(--font-sans);
+      margin: 0;
+      padding-bottom: 5rem;
+    }
 
+    .admin-top-bar {
+      background: #111115;
+      border-bottom: 1px solid #27272A;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .admin-brand {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .admin-brand h1 {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      margin: 0;
+    }
+
+    .sync-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: #10B981;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 0.25rem 0.65rem;
+      border-radius: 20px;
+    }
+
+    .sync-dot {
+      width: 6px;
+      height: 6px;
+      background: #10B981;
+      border-radius: 50%;
+      animation: pulse 1.8s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 1; }
+    }
+
+    .admin-nav {
+      display: flex;
+      gap: 0.5rem;
+      background: #16161B;
+      padding: 0.3rem;
+      border-radius: 8px;
+      border: 1px solid #27272A;
+    }
+
+    .admin-nav-btn {
+      padding: 0.5rem 1.25rem;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #A1A1AA;
+      border-radius: 6px;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      transition: all 150ms ease;
+    }
+
+    .admin-nav-btn:hover {
+      color: #FFFFFF;
+    }
+
+    .admin-nav-btn.active {
+      background: #FFFFFF;
+      color: #000000;
+      font-weight: 700;
+    }
+
+    .view-store-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: transparent;
+      border: 1px solid #3F3F46;
+      color: #FFFFFF;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      text-decoration: none;
+      border-radius: 6px;
+      transition: all 140ms ease;
+    }
+
+    .view-store-btn:hover {
+      background: #27272A;
+      border-color: #FFFFFF;
+    }
+
+    .admin-container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 200ms ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .admin-panel-card {
+      background: #121216;
+      border: 1px solid #27272A;
+      border-radius: 10px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .panel-header {
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid #222228;
+      padding-bottom: 1rem;
+    }
+
+    .panel-title {
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .panel-desc {
+      font-size: 13px;
+      color: #A1A1AA;
+      margin-top: 0.35rem;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.25rem;
+    }
+
+    .form-full {
+      grid-column: 1 / -1;
+    }
+
+    .simple-label {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #D4D4D8;
+      margin-bottom: 0.4rem;
+    }
+
+    .simple-input, .simple-select, .simple-textarea {
+      width: 100%;
+      background: #18181E;
+      border: 1px solid #2E2E36;
+      border-radius: 6px;
+      color: #FFFFFF;
+      font-family: inherit;
+      font-size: 14px;
+      padding: 0.75rem 1rem;
+      box-sizing: border-box;
+      outline: none;
+      transition: border-color 150ms ease;
+    }
+
+    .simple-input:focus, .simple-select:focus, .simple-textarea:focus {
+      border-color: #FFFFFF;
+    }
+
+    .input-hint {
+      font-size: 11px;
+      color: #71717A;
+      margin-top: 0.35rem;
+    }
+
+    .clothes-picker-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+      max-height: 280px;
+      overflow-y: auto;
+      border: 1px solid #27272A;
+      border-radius: 6px;
+      padding: 0.75rem;
+      background: #16161B;
+    }
+
+    .picker-box {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.6rem;
+      background: #1B1B22;
+      border: 1px solid #2E2E36;
+      border-radius: 6px;
+      cursor: pointer;
+      user-select: none;
+      transition: all 120ms ease;
+    }
+
+    .picker-box:hover {
+      border-color: #52525B;
+    }
+
+    .picker-box.checked {
+      border-color: #10B981;
+      background: rgba(16, 185, 129, 0.08);
+    }
+
+    .picker-img {
+      width: 40px;
+      height: 50px;
+      object-fit: cover;
+      border-radius: 4px;
+    }
+
+    .btn-submit-main {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #FFFFFF;
+      color: #000000;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 0.85rem 2rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 1.5rem;
+      transition: all 150ms ease;
+    }
+
+    .btn-submit-main:hover {
+      background: #E4E4E7;
+      transform: translateY(-1px);
+    }
+
+    .items-table-card {
+      background: #121216;
+      border: 1px solid #27272A;
+      border-radius: 10px;
+      padding: 1.5rem;
+    }
+
+    .items-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .product-manage-card {
+      background: #18181E;
+      border: 1px solid #27272A;
+      border-radius: 8px;
+      padding: 1rem;
+      display: flex;
+      gap: 1rem;
+    }
+
+    .product-manage-img {
+      width: 74px;
+      height: 98px;
+      object-fit: cover;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+
+    .product-manage-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .buy-link-input-row {
+      margin-top: 0.5rem;
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .btn-update-link {
+      background: #27272A;
+      color: #FFFFFF;
+      border: 1px solid #3F3F46;
+      border-radius: 4px;
+      padding: 0.35rem 0.75rem;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .btn-update-link:hover {
+      background: #FFFFFF;
+      color: #000000;
+    }
+
+    .btn-delete-simple {
+      background: transparent;
+      color: #EF4444;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 4px;
+      padding: 0.25rem 0.6rem;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      cursor: pointer;
+    }
+
+    .btn-delete-simple:hover {
+      background: #EF4444;
+      color: #FFFFFF;
+    }
+
+    .save-alert {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #10B981;
+      color: #000000;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 0.85rem 1.5rem;
+      border-radius: 6px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 200ms ease;
+      z-index: 1000;
+    }
+
+    .save-alert.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    @media (max-width: 850px) {
+      .form-grid, .items-grid, .clothes-picker-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 <body>
 
-  <!-- Editorial Top Navigation (Synchronized Navbar with Hero Scroll State) -->
-  <header class="editorial-nav hero-synced" id="editorialNav">
-    <!-- Click on MEN'S FIT HUB returns to the main clothing screen -->
-    <div class="editorial-logo" onclick="window.returnToMainScreen()" style="cursor: pointer;" title="Return to Main Clothing Catalog">
-      <span class="editorial-logo-title">MEN'S FIT HUB</span>
-      <span class="editorial-logo-subtitle">VOL. 26 // CURATED WARDROBE</span>
+  <header class="admin-top-bar">
+    <div class="admin-brand">
+      <h1>MEN'S FIT HUB • CREATOR STUDIO</h1>
+      <div class="sync-badge">
+        <span class="sync-dot"></span>
+        <span>REAL-TIME STOREFRONT SYNC: ACTIVE</span>
+      </div>
     </div>
 
-    <!-- Navigation links: Clothes & Reels -->
-    <nav class="nav-links">
-      <a href="#wardrobe" class="nav-link active" data-view-target="wardrobeView">ALL FITS (CLOTHING)</a>
-      <a href="#feed" class="nav-link" data-view-target="feedView">9:16 REELS</a>
+    <nav class="admin-nav">
+      <button class="admin-nav-btn active" onclick="switchAdminTab('tabReels')">🎬 1. REELS (VIDEOS)</button>
+      <button class="admin-nav-btn" onclick="switchAdminTab('tabClothes')">👕 2. CLOTHES & BUY LINKS</button>
+      <button class="admin-nav-btn" onclick="switchAdminTab('tabStats')">📊 3. STATS & CLICKS</button>
     </nav>
 
-    <div class="nav-actions" style="position: relative;">
-      <!-- Customer Login / Sign In Button (Right at the top) -->
-      <a href="/login" class="nav-auth-btn" id="navAuthBtn" onclick="handleAuthNavClick(event)" title="Customer Login / Sign Up">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-          <circle cx="12" cy="7" r="4"></circle>
-        </svg>
-        <span id="navAuthText">LOGIN</span>
-      </a>
-
-      <!-- Account Dropdown Popover (when logged in) -->
-      <div class="auth-user-menu" id="authUserMenu">
-        <div class="auth-user-menu-header">
-          <div class="auth-user-menu-name" id="authUserMenuName">Alex Morgan</div>
-          <div class="auth-user-menu-email" id="authUserMenuEmail">alex@example.com</div>
-        </div>
-        <button type="button" class="auth-user-menu-logout" onclick="logoutCustomer()">LOG OUT</button>
-      </div>
-
-      <!-- Desktop Pill / Mobile Hamburger Menu Toggle -->
-      <button class="nav-menu-toggle-btn" onclick="openFullscreenMenu()" title="Open Navigation Menu">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <line x1="3" y1="12" x2="21" y2="12"></line>
-          <line x1="3" y1="6" x2="21" y2="6"></line>
-          <line x1="3" y1="18" x2="21" y2="18"></line>
-        </svg>
-        <span>MENU</span>
-      </button>
-
-      <button class="nav-btn" onclick="window.returnToMainScreen()">
-        <span>MAIN CATALOG</span>
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <line x1="5" y1="12" x2="19" y2="12"></line>
-          <polyline points="12 5 19 12 12 19"></polyline>
-        </svg>
-      </button>
-    </div>
+    <a href="../storefront/index.html" target="_blank" class="view-store-btn">
+      <span>OPEN CUSTOMER WEBSITE</span>
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="7" y1="17" x2="17" y2="7"></line>
+        <polyline points="7 7 17 7 17 17"></polyline>
+      </svg>
+    </a>
   </header>
 
-  <!-- Full-Screen Menu Overlay (Section 3: z-40 bg-black with Instrument Serif items) -->
-  <div class="fullscreen-nav-overlay" id="fullscreenNavOverlay">
-    <button class="fullscreen-overlay-close" onclick="closeFullscreenMenu()" title="Close Menu">✕</button>
-    <nav class="fullscreen-overlay-links">
-      <a href="#feed" class="fullscreen-overlay-link" onclick="handleMenuClick('feedView')">Reels Feed</a>
-      <a href="#wardrobe" class="fullscreen-overlay-link" onclick="handleMenuClick('wardrobeView', '#wardrobeHero')">The Wardrobe</a>
-      <a href="#catalog" class="fullscreen-overlay-link" onclick="handleMenuClick('wardrobeView', '#wardrobeGrid')">Affiliate Catalog</a>
-      <a href="/login" class="fullscreen-overlay-link" onclick="handleAuthMenuClick(event)">Sign In / Register</a>
-    </nav>
-  </div>
+  <main class="admin-container">
 
-  <main class="app-container">
-
-    <!-- =======================================================
-         VIEW 1 (DEFAULT MAIN SCREEN): MASTER WARDROBE CATALOG (CLOTHES)
-         ======================================================= -->
-    <section class="view-section active" id="wardrobeView">
-
-      <!-- =======================================================
-           FULL-VIEWPORT HERO COMPONENT (SPECIFICATION 2)
-           ======================================================= -->
-      <section class="hero-landing-section relative w-full h-screen overflow-hidden flex items-end justify-center" id="heroLandingSection">
-        <!-- 1. Background Video Layer -->
-        <div class="hero-bg-wrapper absolute inset-0" id="heroBgWrapper">
-          <video 
-            src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260819_212700_3bb9329b-5c50-4257-a09b-ca85cf3654a3.mp4" 
-            autoplay 
-            muted 
-            loop 
-            playsinline 
-            class="w-full h-full object-cover">
-          </video>
+    <!-- TAB 1: REELS -->
+    <section class="tab-content active" id="tabReels">
+      <div class="admin-panel-card">
+        <div class="panel-header">
+          <h2 class="panel-title">ADD A NEW 9:16 REEL TO THE FEED</h2>
+          <p class="panel-desc">Paste your video link, give it a title, and select which clothes from your wardrobe are featured in this reel.</p>
         </div>
 
-        <!-- 2. Foreground (Bottom-Centered Content) -->
-        <div class="hero-fg-container relative z-10 text-center px-6 pb-16 md:pb-24 max-w-4xl mx-auto">
-          <h1 class="hero-title hero-stagger-item hero-h1-item font-instrument text-white text-[2.5rem] leading-[0.95] sm:text-5xl md:text-6xl lg:text-7xl mb-5 md:mb-6">
-            A carefully curated<br class="hidden sm:block" /> wardrobe beyond compare
-          </h1>
-          <p class="hero-subtitle hero-stagger-item hero-subcopy-item text-white/70 text-base md:text-lg mb-8 md:mb-10 max-w-md mx-auto">
-            Direct affiliate access to every outfit featured in our reels.
-          </p>
-          <div>
-            <a href="#wardrobeHero" onclick="unlockAndExploreFits(event)" class="hero-cta hero-stagger-item hero-cta-item inline-block px-8 py-3.5 bg-white text-black text-sm md:text-base font-medium rounded-full hover:bg-white/90 transition-colors">
-              Explore The Fits
-            </a>
-          </div>
-        </div>
-      </section>
+        <form id="reelUploadForm" onsubmit="handleReelSubmit(event)">
+          <div class="form-grid">
+            <div>
+              <label class="simple-label">REEL TITLE</label>
+              <input type="text" class="simple-input" id="newReelTitle" placeholder="e.g. Minimalist Linen Uniform" required>
+            </div>
 
-      <!-- Wardrobe Container: Hidden & Locked until 'Explore The Fits' is clicked -->
-      <div class="wardrobe-container wardrobe-locked" id="wardrobeContainer">
-        <!-- Catalog Header -->
-        <div class="wardrobe-hero" id="wardrobeHero">
-          <div class="wardrobe-breadcrumbs">CATALOG // CURATED MEN'S WARDROBE</div>
-          <div class="wardrobe-title-row">
-            <h1 class="wardrobe-main-heading">CURATED APPAREL & FITS</h1>
-            <span class="wardrobe-count-pill" id="wardrobeTotalCount">CATALOGING ITEMS...</span>
-          </div>
-          <p class="wardrobe-desc">
-            Direct access to every apparel piece, shirt, trouser, and jacket curated in our lookbooks. 
-            Clicking <strong>BUY</strong> opens the verified product store directly in a new tab.
-          </p>
-        </div>
+            <div>
+              <label class="simple-label">TAGS (COMMA SEPARATED)</label>
+              <input type="text" class="simple-input" id="newReelTags" placeholder="linen, summer, streetwear" value="minimalism, streetwear">
+            </div>
 
-        <!-- Faceted Taxonomy Filtering -->
-        <div class="taxonomy-filter-wrapper">
-          <!-- Category Chips -->
-          <div class="filter-row">
-            <span class="filter-group-label">CATEGORY</span>
-            <div class="filter-chips" data-filter-group="category">
-              <button class="filter-chip active" data-filter-val="ALL">ALL FITS</button>
-              <button class="filter-chip" data-filter-val="SHIRT">SHIRTS & KNITS</button>
-              <button class="filter-chip" data-filter-val="PANT">TROUSERS & DENIM</button>
-              <button class="filter-chip" data-filter-val="OUTERWEAR">OUTERWEAR</button>
-              <button class="filter-chip" data-filter-val="SHOE">FOOTWEAR</button>
-              <button class="filter-chip" data-filter-val="ACCESSORY">ACCESSORIES</button>
+            <div>
+              <label class="simple-label">9:16 VIDEO LINK (MP4 / STREAM URL)</label>
+              <input type="text" class="simple-input" id="newReelVideo" placeholder="https://commondatastorage.googleapis.com/.../video.mp4" value="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" required>
+            </div>
+
+            <div>
+              <label class="simple-label">POSTER / COVER IMAGE LINK</label>
+              <input type="text" class="simple-input" id="newReelPoster" placeholder="https://images.unsplash.com/..." value="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=800&q=80">
+            </div>
+
+            <div class="form-full">
+              <label class="simple-label">STYLING NOTES / CAPTION</label>
+              <textarea class="simple-textarea" id="newReelCaption" rows="2" placeholder="Write advice on how to style this outfit..."></textarea>
+            </div>
+
+            <div class="form-full">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+                <label class="simple-label" style="margin: 0;">TAG CLOTHES FEATURED IN THIS REEL</label>
+                <span id="taggedClothesCount" style="font-family: var(--font-mono); font-size: 11px; color: #10B981;">0 items selected</span>
+              </div>
+              <div class="clothes-picker-grid" id="reelClothesSelector"></div>
+              <div class="input-hint">Click on any garment to tag/untag it. These will show inside the "Shop This Look" drawer on the customer website.</div>
             </div>
           </div>
 
-          <!-- Fit Chips -->
-          <div class="filter-row">
-            <span class="filter-group-label">SILHOUETTE</span>
-            <div class="filter-chips" data-filter-group="fit">
-              <button class="filter-chip active" data-filter-val="ALL">ALL SILHOUETTES</button>
-              <button class="filter-chip" data-filter-val="OVERSIZED">OVERSIZED / BOXY</button>
-              <button class="filter-chip" data-filter-val="RELAXED">RELAXED DRAPE</button>
-              <button class="filter-chip" data-filter-val="SLIM">SLIM TAILORED</button>
-            </div>
-          </div>
+          <button type="submit" class="btn-submit-main">
+            🚀 PUBLISH REEL TO WEBSITE
+          </button>
+        </form>
+      </div>
 
-          <!-- Search & Reset Bar -->
-          <div class="catalog-search-row">
-            <div class="catalog-search-box">
-              <svg class="catalog-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="11" cy="11" r="8"></circle>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-              </svg>
-              <input type="text" id="catalogSearchInput" placeholder="Filter by garment name, brand (Zara, Studio Nicholson, COS), or SKU...">
-            </div>
-            <button class="clear-filters-btn" id="clearFiltersBtn">CLEAR ALL</button>
-          </div>
-        </div>
-
-        <!-- 4-Column Product Grid with Single BUY button on each card -->
-        <div class="editorial-grid" id="wardrobeGrid">
-          <!-- Dynamically populated by WardrobeCatalog -->
-        </div>
+      <div class="items-table-card">
+        <h3 style="font-family: var(--font-display); font-size: 1.15rem; margin-top: 0; margin-bottom: 1rem;">ALL CURRENT PUBLISHED REELS</h3>
+        <div id="existingReelsList" style="display: flex; flex-direction: column; gap: 0.75rem;"></div>
       </div>
     </section>
 
-    <!-- =======================================================
-         VIEW 2: REEL-TO-FIT FEED (9:16 VIDEOS)
-         ======================================================= -->
-    <section class="view-section" id="feedView">
-      <div class="reel-feed-wrapper">
-        <!-- Ambient Atmospheric Blurred Backdrop -->
-        <div class="feed-backdrop-blur" id="feedBackdropBlur"></div>
+    <!-- TAB 2: CLOTHES & BUY LINKS -->
+    <section class="tab-content" id="tabClothes">
+      <div class="admin-panel-card">
+        <div class="panel-header">
+          <h2 class="panel-title">ADD A NEW CLOTHING ITEM & BUY LINK</h2>
+          <p class="panel-desc">Add garments to your master wardrobe. Whatever Buy Link you put here will open directly when a customer clicks "BUY".</p>
+        </div>
 
-        <!-- Desktop Navigation Arrows -->
-        <button class="feed-nav-arrow feed-nav-prev" id="feedPrevBtn" title="Previous Look (Key: ↑ / K)">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="18 15 12 9 6 15"></polyline>
-          </svg>
-        </button>
+        <form id="productUploadForm" onsubmit="handleProductSubmit(event)">
+          <div class="form-grid">
+            <div>
+              <label class="simple-label">CLOTHING NAME</label>
+              <input type="text" class="simple-input" id="newProdName" placeholder="e.g. Oversized Camp-Collar Linen Shirt" required>
+            </div>
 
-        <button class="feed-nav-arrow feed-nav-next" id="feedNextBtn" title="Next Look (Key: ↓ / J)">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="6 9 12 15 18 9"></polyline>
-          </svg>
-        </button>
+            <div>
+              <label class="simple-label">BRAND NAME</label>
+              <input type="text" class="simple-input" id="newProdBrand" placeholder="e.g. Zara Man / Studio Nicholson" required>
+            </div>
 
-        <!-- 9:16 Aspect Ratio Centered Viewport Frame -->
-        <div class="reel-viewport-frame">
-          <div class="snap-feed-scroll" id="snapFeedContainer">
-            <!-- Dynamically populated by ReelFeedEngine -->
-          </div>
+            <div>
+              <label class="simple-label">CATEGORY</label>
+              <select class="simple-select" id="newProdCategory">
+                <option value="SHIRT">SHIRT / TOP</option>
+                <option value="PANT">PANT / DENIM</option>
+                <option value="OUTERWEAR">OUTERWEAR / JACKET</option>
+                <option value="SHOE">FOOTWEAR</option>
+                <option value="ACCESSORY">ACCESSORY</option>
+              </select>
+            </div>
 
-          <!-- Interactive "Shop This Look" Bottom Drawer -->
-          <div class="shop-drawer-overlay" id="shopDrawerOverlay">
-            <div class="shop-drawer-sheet">
-              <div class="drawer-drag-handle"></div>
-              
-              <div class="drawer-header">
-                <div>
-                  <div class="drawer-subtitle" id="drawerReelSubtitle">STYLED PIECES</div>
-                  <h3 class="drawer-title" id="drawerReelTitle">SHOP THIS LOOK</h3>
-                </div>
-                <button class="drawer-close-btn" data-action="close-drawer" title="Close Drawer">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                  </svg>
-                </button>
-              </div>
+            <div>
+              <label class="simple-label">PRICE (INR ₹)</label>
+              <input type="number" class="simple-input" id="newProdPrice" value="3499" required>
+            </div>
 
-              <div class="drawer-items-list" id="drawerItemsList">
-                <!-- Dynamically populated with garment breakdown cards with single BUY button -->
-              </div>
+            <div class="form-full">
+              <label class="simple-label" style="color: #38BDF8;">DIRECT BUY LINK (OPENED WHEN CUSTOMER CLICKS "BUY")</label>
+              <input type="url" class="simple-input" id="newProdBuyLink" placeholder="https://www.amazon.in/dp/... or https://www.flipkart.com/..." value="https://www.amazon.in/dp/B09XYZ123?tag=mensfithub-21" required style="border-color: #38BDF8;">
+              <div class="input-hint">Paste your Amazon, Flipkart, Myntra, or store link here. When customer clicks "BUY" on the website, this EXACT link will open.</div>
+            </div>
+
+            <div class="form-full">
+              <label class="simple-label">IMAGE PHOTO URL (3:4 PORTRAIT)</label>
+              <input type="text" class="simple-input" id="newProdImage" placeholder="https://images.unsplash.com/..." value="https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=800&q=80" required>
+            </div>
+
+            <div class="form-full">
+              <label class="simple-label">SIZING / FIT ADVICE NOTE (OPTIONAL)</label>
+              <input type="text" class="simple-input" id="newProdFitAdvice" placeholder="e.g. Boxy drop shoulder — take your true size.">
             </div>
           </div>
+
+          <button type="submit" class="btn-submit-main">
+            💾 SAVE CLOTHING ITEM
+          </button>
+        </form>
+      </div>
+
+      <div class="items-table-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <h3 style="font-family: var(--font-display); font-size: 1.15rem; margin: 0;">ALL WARDROBE ITEMS & BUY LINKS</h3>
+          <span style="font-family: var(--font-mono); font-size: 11px; color: #A1A1AA;" id="totalProductsCount">Loading items...</span>
+        </div>
+
+        <div class="items-grid" id="existingProductsGrid"></div>
+      </div>
+    </section>
+
+    <!-- TAB 3: STATS -->
+    <section class="tab-content" id="tabStats">
+      <div class="admin-panel-card">
+        <div class="panel-header">
+          <h2 class="panel-title">OVERVIEW & OUTBOUND BUY CLICKS</h2>
+          <p class="panel-desc">Real-time stats showing customer engagement and clicks on your buy buttons.</p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;">
+          <div style="background: #18181E; padding: 1.5rem; border-radius: 8px; border: 1px solid #27272A;">
+            <div style="font-family: var(--font-mono); font-size: 11px; color: #A1A1AA;">TOTAL REEL VIEWS</div>
+            <div style="font-family: var(--font-display); font-size: 2rem; font-weight: 800; margin-top: 0.5rem;" id="statTotalViews">98,140</div>
+          </div>
+
+          <div style="background: #18181E; padding: 1.5rem; border-radius: 8px; border: 1px solid #27272A;">
+            <div style="font-family: var(--font-mono); font-size: 11px; color: #10B981;">TOTAL BUY BUTTON CLICKS</div>
+            <div style="font-family: var(--font-display); font-size: 2rem; font-weight: 800; color: #10B981; margin-top: 0.5rem;" id="statTotalClicks">14</div>
+          </div>
+
+          <div style="background: #18181E; padding: 1.5rem; border-radius: 8px; border: 1px solid #27272A;">
+            <div style="font-family: var(--font-mono); font-size: 11px; color: #38BDF8;">TOTAL ACTIVE FITS</div>
+            <div style="font-family: var(--font-display); font-size: 2rem; font-weight: 800; color: #38BDF8; margin-top: 0.5rem;" id="statTotalFits">10</div>
+          </div>
+        </div>
+
+        <div style="margin-top: 2rem;">
+          <h4 style="font-family: var(--font-display); margin-bottom: 0.75rem;">TOP CLICKED FITS</h4>
+          <div id="topClickedFitsList" style="display: flex; flex-direction: column; gap: 0.5rem;"></div>
         </div>
       </div>
     </section>
 
   </main>
 
-  <!-- Mobile Bottom Navigation Bar (Touch-friendly 1-thumb navigation on phones) -->
-  <nav class="mobile-bottom-nav">
-    <a href="#wardrobe" class="mobile-nav-item active" data-view-target="wardrobeView">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-        <path d="M20.38 3.46L16 2a4 4 0 0 0-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/>
-      </svg>
-      <span>CLOTHES</span>
-    </a>
-    <a href="#feed" class="mobile-nav-item" data-view-target="feedView">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-        <polygon points="5 3 19 12 5 21 5 3"/>
-      </svg>
-      <span>9:16 REELS</span>
-    </a>
-  </nav>
-
-  <!-- =======================================================
-       "SEEN IN REEL" MODAL / MINI-PLAYER POPUP
-       ======================================================= -->
-  <div class="editorial-modal-backdrop" id="seenReelModal">
-    <div class="seen-reel-modal-content" id="seenReelModalContent">
-      <!-- Populated dynamically by wardrobe.js -->
-    </div>
+  <div class="save-alert" id="saveAlert">
+    CHANGES SAVED & SYNCED TO CUSTOMER SITE!
   </div>
 
-  <!-- =======================================================
-       CUSTOMER AUTHENTICATION MODAL (WITH MOTION VIDEO BACKDROP)
-       ======================================================= -->
-  <div class="auth-modal-overlay" id="authModalOverlay">
-    <!-- 1. Motion Video Backdrop -->
-    <div class="auth-modal-video-wrap" id="authModalVideoWrap">
-      <video 
-        src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260819_212700_3bb9329b-5c50-4257-a09b-ca85cf3654a3.mp4" 
-        autoplay 
-        muted 
-        loop 
-        playsinline 
-        class="auth-modal-video">
-      </video>
-      <div class="auth-modal-backdrop-tint"></div>
-    </div>
-
-    <!-- 2. Minimal Brand Header -->
-    <header class="auth-modal-header">
-      <a href="/" class="auth-modal-brand" onclick="closeAuthModal(event)">
-        Men's Fit Hub
-      </a>
-      <div style="display: flex; align-items: center; gap: 0.75rem;">
-        <!-- Subtle accent Flower2 icon -->
-        <div style="display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 9999px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15);">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: rgba(255,255,255,0.9);">
-            <path d="M12 5a3 3 0 1 1 3 3m-3-3a3 3 0 1 0-3 3m3-3v1m0 3a3 3 0 1 1 3 3m-3-3a3 3 0 1 0-3 3m3-3v1m-3-3a3 3 0 1 1-3-3m3 3a3 3 0 1 0-3 3m3-3h1m3 0a3 3 0 1 1 3 3m-3-3a3 3 0 1 0 3-3m-3 3h1"/>
-            <circle cx="12" cy="12" r="2"/>
-          </svg>
-        </div>
-        <!-- Close button to return to store -->
-        <button class="auth-modal-close-btn" onclick="closeAuthModal()" title="Close and return to store">
-          ✕
-        </button>
-      </div>
-    </header>
-
-    <!-- 3. Authentication Card (Centered Viewport) -->
-    <div class="auth-modal-body">
-      <div class="auth-card" id="authCard">
-        <div class="auth-card-title" id="authCardTitle">Welcome Back!</div>
-        <p class="auth-card-subtitle" id="authCardSubtitle">
-          <strong style="font-weight: 600; color: #1f2937;" id="authSubtitleAction">Log in</strong> to continue monitoring your signals.
-        </p>
-
-        <div id="authAlertBox" style="display: none; margin-bottom: 1rem; padding: 0.75rem; border-radius: 0.75rem; font-size: 12px; font-weight: 500;"></div>
-
-        <form id="authModalForm" onsubmit="handleAuthSubmit(event)">
-          <div style="margin-bottom: 0.875rem;">
-            <input type="email" id="authEmailInput" placeholder="Eg. johndoe@gmail.com" required class="auth-input-email">
-          </div>
-          <div style="margin-bottom: 0.875rem;">
-            <input type="password" id="authPasswordInput" placeholder="Password" required class="auth-input-password">
-          </div>
-          <button type="submit" class="auth-btn-primary" id="authSubmitBtn">
-            <span id="authSubmitBtnText">Login</span>
-            <span style="font-weight: 600;">-&gt;</span>
-          </button>
-        </form>
-
-        <!-- Divider -->
-        <div class="auth-divider-wrap">
-          <div class="auth-divider-line"></div>
-          <span class="auth-divider-pill">OR</span>
-        </div>
-
-        <!-- Social Sign-In -->
-        <button type="button" class="auth-btn-google" onclick="handleGoogleAuth()">
-          <svg width="18" height="18" viewBox="0 0 24 24">
-            <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.65v3.03h3.88c2.27-2.09 3.665-5.17 3.665-9.12z"/>
-            <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.03c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.13C3.27 21.36 7.35 24 12 24z"/>
-            <path fill="#FBBC05" d="M5.28 14.29c-.25-.72-.38-1.49-.38-2.29s.13-1.57.38-2.29V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.13z"/>
-            <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.35 0 3.27 2.64 1.25 6.58l4.03 3.13c.95-2.83 3.6-4.96 6.72-4.96z"/>
-          </svg>
-          <span>Sign in with Google</span>
-        </button>
-
-        <!-- Footer Toggle -->
-        <div class="auth-footer-toggle">
-          <button type="button" class="auth-footer-toggle-btn" id="authModeToggleBtn" onclick="toggleAuthMode()">
-            Don't have an account? <strong>Start Free</strong>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Symmetrical footer buffer -->
-    <div style="height: 1.5rem; width: 100%;"></div>
-  </div>
-
-  <!-- Load Database and Storefront Scripts -->
-  <script src="packages/database/db.js"></script>
-  <script src="apps/storefront/js/feed.js"></script>
-  <script src="apps/storefront/js/wardrobe.js"></script>
-  <script src="apps/storefront/js/affiliate-client.js"></script>
+  <script src="../../packages/database/db.js"></script>
 
   <script>
-    // Navigation and View Switching Engine
-    window.switchView = function(viewId) {
-      document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
-      const target = document.getElementById(viewId);
-      if (target) {
-        target.classList.add('active');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
+    let selectedGarmentIds = new Set();
 
-      document.querySelectorAll('.nav-link, .mobile-nav-item').forEach(link => {
-        if (link.dataset.viewTarget === viewId) {
-          link.classList.add('active');
-        } else {
-          link.classList.remove('active');
-        }
+    function switchAdminTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.admin-nav-btn').forEach(b => b.classList.remove('active'));
+      
+      const target = document.getElementById(tabId);
+      if (target) target.classList.add('active');
+
+      const activeBtn = Array.from(document.querySelectorAll('.admin-nav-btn')).find(b => b.getAttribute('onclick').includes(tabId));
+      if (activeBtn) activeBtn.classList.add('active');
+
+      if (tabId === 'tabStats') loadStats();
+    }
+
+    function showNotification(msg) {
+      const el = document.getElementById('saveAlert');
+      el.textContent = msg;
+      el.classList.add('show');
+      setTimeout(() => el.classList.remove('show'), 2200);
+    }
+
+    function renderReelGarmentsSelector() {
+      const container = document.getElementById('reelClothesSelector');
+      if (!container || !window.MFH_DATABASE) return;
+      container.innerHTML = '';
+
+      const products = window.MFH_DATABASE.products;
+      products.forEach(p => {
+        const box = document.createElement('div');
+        box.className = `picker-box ${selectedGarmentIds.has(p.id) ? 'checked' : ''}`;
+        box.innerHTML = `
+          <img src="${p.primaryImage}" class="picker-img" alt="${p.name}">
+          <div style="flex: 1; min-width: 0;">
+            <div style="font-weight: 600; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${p.name}</div>
+            <div style="font-family: var(--font-mono); font-size: 9px; color: #A1A1AA;">${p.brand} • ₹${p.priceEstimate}</div>
+          </div>
+          <div style="font-family: var(--font-mono); font-size: 12px; color: ${selectedGarmentIds.has(p.id) ? '#10B981' : '#52525B'}; font-weight: 700;">
+            ${selectedGarmentIds.has(p.id) ? '✓' : '+'}
+          </div>
+        `;
+
+        box.onclick = () => {
+          if (selectedGarmentIds.has(p.id)) {
+            selectedGarmentIds.delete(p.id);
+          } else {
+            selectedGarmentIds.add(p.id);
+          }
+          renderReelGarmentsSelector();
+          document.getElementById('taggedClothesCount').textContent = `${selectedGarmentIds.size} items selected`;
+        };
+
+        container.appendChild(box);
+      });
+    }
+
+    function renderExistingReels() {
+      const container = document.getElementById('existingReelsList');
+      if (!container || !window.MFH_DATABASE) return;
+      container.innerHTML = '';
+
+      const reels = window.MFH_DATABASE.getAllReels();
+      reels.forEach(r => {
+        const row = document.createElement('div');
+        row.style.cssText = 'display: flex; align-items: center; justify-content: space-between; padding: 0.85rem; background: #18181E; border: 1px solid #27272A; border-radius: 6px;';
+        row.innerHTML = `
+          <div style="display: flex; align-items: center; gap: 1rem;">
+            <img src="${r.posterUrl}" style="width: 44px; height: 58px; object-fit: cover; border-radius: 4px;" alt="${r.title}">
+            <div>
+              <div style="font-weight: 700; font-size: 13px;">${r.title}</div>
+              <div style="font-family: var(--font-mono); font-size: 10px; color: #A1A1AA; margin-top: 2px;">
+                ${r.itemIds ? r.itemIds.length : 0} Clothes Tagged • ${(r.tags || []).join(', ')}
+              </div>
+            </div>
+          </div>
+          <button class="btn-delete-simple" onclick="deleteReel('${r.id}')">DELETE REEL</button>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    function deleteReel(id) {
+      if (confirm('Delete this reel from the customer storefront?')) {
+        window.MFH_DATABASE.deleteReel(id);
+        renderExistingReels();
+        showNotification('REEL DELETED & SYNCED TO WEBSITE!');
+      }
+    }
+
+    function handleReelSubmit(e) {
+      e.preventDefault();
+      const title = document.getElementById('newReelTitle').value.trim();
+      const videoUrl = document.getElementById('newReelVideo').value.trim();
+      const posterUrl = document.getElementById('newReelPoster').value.trim();
+      const caption = document.getElementById('newReelCaption').value.trim();
+      const tags = document.getElementById('newReelTags').value.trim();
+
+      if (!title || !videoUrl) return;
+
+      window.MFH_DATABASE.createReel({
+        title,
+        videoUrl,
+        posterUrl,
+        caption,
+        tags,
+        isPublished: true,
+        itemIds: Array.from(selectedGarmentIds)
       });
 
-      if (viewId !== 'feedView' && window.FeedInstance) {
-        window.FeedInstance.videoElements.forEach(v => v.pause());
+      document.getElementById('newReelTitle').value = '';
+      selectedGarmentIds.clear();
+      renderReelGarmentsSelector();
+      renderExistingReels();
+      document.getElementById('taggedClothesCount').textContent = '0 items selected';
+
+      showNotification('REEL PUBLISHED! VISIBLE ON STOREFRONT NOW.');
+    }
+
+    function renderExistingProducts() {
+      const container = document.getElementById('existingProductsGrid');
+      const totalCount = document.getElementById('totalProductsCount');
+      if (!container || !window.MFH_DATABASE) return;
+      container.innerHTML = '';
+
+      const products = window.MFH_DATABASE.products;
+      if (totalCount) totalCount.textContent = `${products.length} Items Active`;
+
+      products.forEach(p => {
+        const currentLink = (p.affiliateLinks && p.affiliateLinks[0]) ? (p.affiliateLinks[0].affiliateUrl || p.affiliateLinks[0].rawUrl) : '';
+
+        const card = document.createElement('div');
+        card.className = 'product-manage-card';
+        card.innerHTML = `
+          <img src="${p.primaryImage}" class="product-manage-img" alt="${p.name}">
+          <div class="product-manage-info">
+            <div>
+              <div style="display: flex; justify-content: space-between;">
+                <div style="font-family: var(--font-mono); font-size: 10px; color: #A1A1AA;">${p.brand} • ${p.category}</div>
+                <button class="btn-delete-simple" onclick="deleteProduct('${p.id}')">DELETE</button>
+              </div>
+              <div style="font-weight: 700; font-size: 12px; margin-top: 2px;">${p.name}</div>
+              <div style="font-family: var(--font-mono); font-size: 11px; color: #10B981; font-weight: 700; margin-top: 2px;">₹ ${Number(p.priceEstimate).toLocaleString('en-IN')}</div>
+            </div>
+
+            <div>
+              <label style="font-family: var(--font-mono); font-size: 9px; color: #71717A; text-transform: uppercase;">Direct Buy Link:</label>
+              <div class="buy-link-input-row">
+                <input type="text" class="simple-input" style="font-size: 11px; padding: 0.35rem 0.5rem;" value="${currentLink}" id="link_input_${p.id}">
+                <button class="btn-update-link" onclick="updateBuyLink('${p.id}')">SAVE LINK</button>
+              </div>
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function updateBuyLink(id) {
+      const input = document.getElementById(`link_input_${id}`);
+      if (!input) return;
+      const newLink = input.value.trim();
+
+      window.MFH_DATABASE.updateProduct(id, { buyLink: newLink });
+      showNotification('BUY LINK UPDATED! STOREFRONT SYNCED.');
+    }
+
+    function deleteProduct(id) {
+      if (confirm('Delete this clothing item?')) {
+        window.MFH_DATABASE.deleteProduct(id);
+        renderExistingProducts();
+        renderReelGarmentsSelector();
+        showNotification('ITEM DELETED!');
       }
-    };
+    }
 
-    // Unlock and Reveal Wardrobe when "Explore The Fits" is clicked
-    window.unlockAndExploreFits = function(e) {
-      if (e) e.preventDefault();
-      const container = document.getElementById('wardrobeContainer');
-      if (container) {
-        container.classList.remove('wardrobe-locked');
-        container.classList.add('wardrobe-unlocked');
+    function handleProductSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('newProdName').value.trim();
+      const brand = document.getElementById('newProdBrand').value.trim();
+      const category = document.getElementById('newProdCategory').value;
+      const price = document.getElementById('newProdPrice').value;
+      const buyLink = document.getElementById('newProdBuyLink').value.trim();
+      const primaryImage = document.getElementById('newProdImage').value.trim();
+      const fitAdvice = document.getElementById('newProdFitAdvice').value.trim();
+
+      if (!name || !brand || !buyLink || !primaryImage) return;
+
+      window.MFH_DATABASE.createProduct({
+        name,
+        brand,
+        category,
+        priceEstimate: parseFloat(price) || 2999,
+        buyLink,
+        primaryImage,
+        fitAdvice
+      });
+
+      document.getElementById('newProdName').value = '';
+      document.getElementById('newProdBrand').value = '';
+
+      renderExistingProducts();
+      renderReelGarmentsSelector();
+      showNotification('CLOTHING ITEM SAVED & SYNCED TO WEBSITE!');
+    }
+
+    function loadStats() {
+      if (!window.MFH_DATABASE) return;
+      const data = window.MFH_DATABASE.getAnalytics();
+      
+      document.getElementById('statTotalViews').textContent = Number(data.totalViews).toLocaleString();
+      document.getElementById('statTotalClicks').textContent = Number(data.totalClicks).toLocaleString();
+      document.getElementById('statTotalFits').textContent = window.MFH_DATABASE.products.length;
+
+      const topList = document.getElementById('topClickedFitsList');
+      if (topList) {
+        topList.innerHTML = '';
+        data.topFits.forEach((fit, idx) => {
+          const row = document.createElement('div');
+          row.style.cssText = 'display: flex; align-items: center; justify-content: space-between; padding: 0.65rem 1rem; background: #141419; border: 1px solid #27272A; border-radius: 6px; font-family: var(--font-mono); font-size: 11px;';
+          row.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <span style="font-weight: 800; color: #71717A;">#${idx + 1}</span>
+              <img src="${fit.image}" style="width: 28px; height: 36px; object-fit: cover; border-radius: 2px;">
+              <span style="font-weight: 600;">${fit.name}</span>
+            </div>
+            <span style="color: #10B981; font-weight: 700;">${fit.clicks} CLICKS</span>
+          `;
+          topList.appendChild(row);
+        });
       }
-      if (window.WardrobeInstance) {
-        window.WardrobeInstance.render();
-      }
-      setTimeout(() => {
-        const hero = document.getElementById('wardrobeHero') || document.getElementById('wardrobeGrid');
-        if (hero) {
-          hero.scrollIntoView({ behavior: 'smooth' });
-        }
-      }, 100);
-    };
-
-    // Return to pure Hero Landing screen when clicking "MEN'S FIT HUB" logo
-    window.returnToMainScreen = function() {
-      window.switchView('wardrobeView');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      // Re-lock wardrobe so user cannot scroll into clothes until clicking Explore The Fits again
-      const container = document.getElementById('wardrobeContainer');
-      if (container) {
-        container.classList.remove('wardrobe-unlocked');
-        container.classList.add('wardrobe-locked');
-      }
-      if (window.WardrobeInstance) {
-        window.WardrobeInstance.resetFilters();
-      }
-    };
-
-    // Full-Screen Menu Overlay Handlers (Section 3)
-    window.openFullscreenMenu = function() {
-      const overlay = document.getElementById('fullscreenNavOverlay');
-      if (overlay) {
-        overlay.classList.add('is-active');
-        document.body.style.overflow = 'hidden';
-      }
-    };
-
-    window.closeFullscreenMenu = function() {
-      const overlay = document.getElementById('fullscreenNavOverlay');
-      if (overlay) {
-        overlay.classList.remove('is-active');
-        document.body.style.overflow = '';
-      }
-    };
-
-    window.handleMenuClick = function(viewId, targetSelector) {
-      window.closeFullscreenMenu();
-      if (viewId === 'wardrobeView') {
-        const container = document.getElementById('wardrobeContainer');
-        if (container) {
-          container.classList.remove('wardrobe-locked');
-          container.classList.add('wardrobe-unlocked');
-        }
-      }
-      window.switchView(viewId);
-      if (targetSelector) {
-        setTimeout(() => {
-          const el = document.querySelector(targetSelector);
-          if (el) el.scrollIntoView({ behavior: 'smooth' });
-        }, 150);
-      }
-    };
-
-    // Navbar Scroll Synchronization (Transparent until scrollY > 40)
-    window.addEventListener('scroll', () => {
-      const nav = document.getElementById('editorialNav');
-      if (!nav) return;
-      if (window.scrollY > 40) {
-        nav.classList.add('scrolled-nav');
-      } else {
-        const activeView = document.querySelector('.view-section.active');
-        if (activeView && activeView.id === 'wardrobeView') {
-          nav.classList.remove('scrolled-nav');
-        }
-      }
-    }, { passive: true });
-
-    // =======================================================
-    // CUSTOMER AUTHENTICATION ENGINE (LOGIN / SIGN UP)
-    // =======================================================
-    let isAuthRegisterMode = false;
-
-    window.initAuthUI = function() {
-      const stored = localStorage.getItem('mfh_customer_user');
-      const btn = document.getElementById('navAuthBtn');
-      const text = document.getElementById('navAuthText');
-      const menuName = document.getElementById('authUserMenuName');
-      const menuEmail = document.getElementById('authUserMenuEmail');
-
-      if (stored) {
-        try {
-          const user = JSON.parse(stored);
-          const displayName = user.name ? user.name.toUpperCase() : (user.email ? user.email.split('@')[0].toUpperCase() : 'ACCOUNT');
-          if (text) text.textContent = displayName;
-          if (btn) btn.classList.add('is-logged-in');
-          if (menuName) menuName.textContent = user.name || user.email.split('@')[0];
-          if (menuEmail) menuEmail.textContent = user.email || '';
-        } catch (e) {
-          console.warn('Invalid user session', e);
-        }
-      } else {
-        if (text) text.textContent = 'LOGIN';
-        if (btn) btn.classList.remove('is-logged-in');
-      }
-    };
-
-    window.handleAuthNavClick = function(e) {
-      if (e) e.preventDefault();
-      const stored = localStorage.getItem('mfh_customer_user');
-      const userMenu = document.getElementById('authUserMenu');
-      if (stored && userMenu) {
-        userMenu.classList.toggle('is-open');
-      } else {
-        window.openAuthModal('login');
-      }
-    };
-
-    window.handleAuthMenuClick = function(e) {
-      if (e) e.preventDefault();
-      window.closeFullscreenMenu();
-      window.openAuthModal('login');
-    };
-
-    window.openAuthModal = function(mode = 'login') {
-      const overlay = document.getElementById('authModalOverlay');
-      if (!overlay) return;
-      isAuthRegisterMode = (mode === 'signup' || mode === 'register');
-      window.updateAuthCardUI();
-      overlay.classList.add('is-active');
-      document.body.style.overflow = 'hidden';
-
-      const alertBox = document.getElementById('authAlertBox');
-      if (alertBox) alertBox.style.display = 'none';
-    };
-
-    window.closeAuthModal = function(e) {
-      if (e) e.preventDefault();
-      const overlay = document.getElementById('authModalOverlay');
-      if (overlay) {
-        overlay.classList.remove('is-active');
-        document.body.style.overflow = '';
-      }
-    };
-
-    window.toggleAuthMode = function() {
-      isAuthRegisterMode = !isAuthRegisterMode;
-      window.updateAuthCardUI();
-    };
-
-    window.updateAuthCardUI = function() {
-      const title = document.getElementById('authCardTitle');
-      const subAction = document.getElementById('authSubtitleAction');
-      const btnText = document.getElementById('authSubmitBtnText');
-      const toggleBtn = document.getElementById('authModeToggleBtn');
-      const alertBox = document.getElementById('authAlertBox');
-      if (alertBox) alertBox.style.display = 'none';
-
-      if (isAuthRegisterMode) {
-        if (title) title.textContent = 'Create Account';
-        if (subAction) subAction.textContent = 'Sign up';
-        if (btnText) btnText.textContent = 'Sign Up';
-        if (toggleBtn) toggleBtn.innerHTML = 'Already have an account? <strong>Log In</strong>';
-      } else {
-        if (title) title.textContent = 'Welcome Back!';
-        if (subAction) subAction.textContent = 'Log in';
-        if (btnText) btnText.textContent = 'Login';
-        if (toggleBtn) toggleBtn.innerHTML = "Don't have an account? <strong>Start Free</strong>";
-      }
-    };
-
-    window.handleAuthSubmit = function(e) {
-      if (e) e.preventDefault();
-      const email = document.getElementById('authEmailInput').value.trim();
-      const pass = document.getElementById('authPasswordInput').value;
-      const alertBox = document.getElementById('authAlertBox');
-      const submitBtn = document.getElementById('authSubmitBtn');
-
-      if (!email || !email.includes('@')) {
-        alertBox.style.display = 'block';
-        alertBox.style.background = '#fef2f2';
-        alertBox.style.border = '1px solid #fecaca';
-        alertBox.style.color = '#b91c1c';
-        alertBox.textContent = 'Please enter a valid email address.';
-        return;
-      }
-      if (!pass || pass.length < 6) {
-        alertBox.style.display = 'block';
-        alertBox.style.background = '#fef2f2';
-        alertBox.style.border = '1px solid #fecaca';
-        alertBox.style.color = '#b91c1c';
-        alertBox.textContent = 'Password must be at least 6 characters.';
-        return;
-      }
-
-      submitBtn.disabled = true;
-      submitBtn.style.opacity = '0.7';
-
-      setTimeout(() => {
-        submitBtn.disabled = false;
-        submitBtn.style.opacity = '1';
-        const user = {
-          email: email,
-          name: email.split('@')[0],
-          provider: 'EMAIL',
-          token: 'mfh_token_' + Date.now()
-        };
-        localStorage.setItem('mfh_customer_user', JSON.stringify(user));
-        
-        // Register customer in Database Engine
-        if (window.MFH_DATABASE && typeof window.MFH_DATABASE.registerCustomerLogin === 'function') {
-          window.MFH_DATABASE.registerCustomerLogin(user);
-        }
-
-        alertBox.style.display = 'block';
-        alertBox.style.background = '#ecfdf5';
-        alertBox.style.border = '1px solid #a7f3d0';
-        alertBox.style.color = '#047857';
-        alertBox.textContent = isAuthRegisterMode ? 'Account created! Welcome to Men\'s Fit Hub.' : 'Authenticated! Welcome back.';
-
-        setTimeout(() => {
-          window.closeAuthModal();
-          window.initAuthUI();
-        }, 600);
-      }, 500);
-    };
-
-    window.handleGoogleAuth = function() {
-      const alertBox = document.getElementById('authAlertBox');
-      alertBox.style.display = 'block';
-      alertBox.style.background = '#ecfdf5';
-      alertBox.style.border = '1px solid #a7f3d0';
-      alertBox.style.color = '#047857';
-      alertBox.textContent = 'Connecting with Google...';
-
-      setTimeout(() => {
-        const googleUser = {
-          email: 'alex.morgan@gmail.com',
-          name: 'Alex Morgan',
-          provider: 'GOOGLE',
-          token: 'mfh_google_token_' + Date.now()
-        };
-        localStorage.setItem('mfh_customer_user', JSON.stringify(googleUser));
-        
-        // Register customer in Database Engine
-        if (window.MFH_DATABASE && typeof window.MFH_DATABASE.registerCustomerLogin === 'function') {
-          window.MFH_DATABASE.registerCustomerLogin(googleUser);
-        }
-
-        window.closeAuthModal();
-        window.initAuthUI();
-      }, 600);
-    };
-
-    window.logoutCustomer = function() {
-      localStorage.removeItem('mfh_customer_user');
-      const userMenu = document.getElementById('authUserMenu');
-      if (userMenu) userMenu.classList.remove('is-open');
-      window.initAuthUI();
-    };
-
-    // Close user menu when clicking outside
-    document.addEventListener('click', (e) => {
-      const userMenu = document.getElementById('authUserMenu');
-      const authBtn = document.getElementById('navAuthBtn');
-      if (userMenu && userMenu.classList.contains('is-open')) {
-        if (!userMenu.contains(e.target) && !authBtn.contains(e.target)) {
-          userMenu.classList.remove('is-open');
-        }
-      }
-    });
+    }
 
     document.addEventListener('DOMContentLoaded', () => {
-      // Initialize Auth UI State
-      window.initAuthUI();
-
-      document.querySelectorAll('[data-view-target]').forEach(link => {
-        link.addEventListener('click', (e) => {
-          e.preventDefault();
-          const target = link.dataset.viewTarget;
-          if (target === 'wardrobeView') {
-            const container = document.getElementById('wardrobeContainer');
-            if (container) {
-              container.classList.remove('wardrobe-locked');
-              container.classList.add('wardrobe-unlocked');
-            }
-          }
-          window.switchView(target);
-        });
-      });
-
-      window.FeedInstance = new ReelFeedEngine();
-      window.WardrobeInstance = new WardrobeCatalog();
-      window.AffiliateClient = new AffiliateRedirectClient();
-
-      // Staggered Animation Timings (On Mount):
-      // Wrapper: scale-105 opacity-0 -> scale-100 opacity-100 after 300ms mounted (duration-[1400ms])
-      // H1 (400ms delay), Subcopy (600ms delay), CTA (800ms delay) with duration-900 + entrance easing
-      setTimeout(() => {
-        const bgWrapper = document.getElementById('heroBgWrapper');
-        if (bgWrapper) bgWrapper.classList.add('is-mounted');
-        
-        document.querySelectorAll('.hero-stagger-item').forEach(item => {
-          item.classList.add('is-mounted');
-        });
-      }, 300);
-
-      // Real-time live synchronization with Admin Panel
-      if (typeof BroadcastChannel !== 'undefined') {
-        const syncChannel = new BroadcastChannel('mfh_sync_channel');
-        syncChannel.onmessage = (event) => {
-          console.log('[SYNC] Real-time data update received from Admin:', event.data);
-          if (window.MFH_DATABASE) window.MFH_DATABASE.reloadFromStorage();
-          if (window.FeedInstance) window.FeedInstance.loadReels();
-          if (window.WardrobeInstance) window.WardrobeInstance.render();
-        };
-      }
-      window.addEventListener('storage', (e) => {
-        if (e.key === 'mfh_v2_data') {
-          if (window.MFH_DATABASE) window.MFH_DATABASE.reloadFromStorage();
-          if (window.FeedInstance) window.FeedInstance.loadReels();
-          if (window.WardrobeInstance) window.WardrobeInstance.render();
-        }
-      });
-
-      // DEFAULT IS CLOTHING SECTION ("wardrobeView")
-      if (window.location.hash === '#feed') {
-        window.switchView('feedView');
-      } else {
-        window.switchView('wardrobeView');
-      }
+      renderReelGarmentsSelector();
+      renderExistingReels();
+      renderExistingProducts();
     });
   </script>
 </body>

@@ -1,0 +1,651 @@
+/* 
+ * MEN'S FIT HUB • MASTER WARDROBE CATALOG ("ALL FITS")
+ * Document Ref: PRD-MFH-2026-V2 (Section 7)
+ * Editorial Lookbook Grid, Faceted Filtering & Embedded "Seen in Reel" Modal
+ */
+
+.wardrobe-container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 2.5rem 2rem 5rem 2rem;
+  width: 100%;
+}
+
+/* Catalog Header with Editorial Manifesto */
+.wardrobe-hero {
+  margin-bottom: 2.5rem;
+  border-bottom: 1px solid var(--border-hairline);
+  padding-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.wardrobe-breadcrumbs {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+
+.wardrobe-title-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.wardrobe-main-heading {
+  font-family: var(--font-display);
+  font-size: 2.75rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  text-transform: uppercase;
+}
+
+.wardrobe-count-pill {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-hairline);
+  padding: 0.4rem 0.9rem;
+  background: var(--bg-surface);
+}
+
+.wardrobe-desc {
+  font-size: 14px;
+  color: var(--text-secondary);
+  max-width: 680px;
+  line-height: 1.6;
+}
+
+/* Faceted Taxonomy Filter Bar */
+.taxonomy-filter-wrapper {
+  margin-bottom: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-hairline);
+  padding: 1.5rem;
+}
+
+.filter-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.filter-group-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  min-width: 90px;
+}
+
+.filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.filter-chip {
+  padding: 0.4rem 0.85rem;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: 1px solid var(--border-hairline);
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+
+.filter-chip:hover {
+  border-color: var(--text-primary);
+  color: var(--text-primary);
+}
+
+.filter-chip.active {
+  background: var(--text-primary);
+  color: var(--bg-primary);
+  border-color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* Search & Utility Bar */
+.catalog-search-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-hairline);
+}
+
+.catalog-search-box {
+  flex: 1;
+  position: relative;
+}
+
+.catalog-search-box input {
+  width: 100%;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-hairline);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  padding: 0.6rem 1rem 0.6rem 2.4rem;
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.catalog-search-box input:focus {
+  border-color: var(--text-primary);
+}
+
+.catalog-search-icon {
+  position: absolute;
+  left: 0.85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-tertiary);
+  pointer-events: none;
+}
+
+.clear-filters-btn {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  padding: 0.5rem 0.8rem;
+  border: 1px solid transparent;
+  transition: all var(--transition-fast);
+}
+
+.clear-filters-btn:hover {
+  color: var(--text-primary);
+  border-color: var(--border-hairline);
+}
+
+/* Editorial 4-Column Product Grid (2-column on mobile, Section 7) */
+.editorial-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  width: 100%;
+}
+
+/* Garment Card */
+.garment-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-hairline);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  transition: border-color var(--transition-fast);
+}
+
+.garment-card:hover {
+  border-color: var(--text-secondary);
+}
+
+/* Image Container with Subtle 1.02x scale on hover (Section 8) */
+.garment-image-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  background: #000;
+  cursor: pointer;
+}
+
+.garment-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 400ms var(--ease-spring);
+}
+
+.garment-card:hover .garment-image {
+  transform: scale(1.02);
+}
+
+/* "Styled in Reel" Interactive Badge */
+.styled-in-reel-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: rgba(9, 9, 11, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-hairline);
+  color: var(--text-primary);
+  padding: 0.35rem 0.65rem;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  z-index: 5;
+  transition: all var(--transition-fast);
+}
+
+.styled-in-reel-badge:hover {
+  background: var(--text-primary);
+  color: var(--bg-primary);
+  border-color: var(--text-primary);
+}
+
+.play-triangle-mini {
+  width: 0;
+  height: 0;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  border-left: 6px solid currentColor;
+}
+
+/* Garment Content Body */
+.garment-card-body {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border-top: 1px solid var(--border-hairline);
+}
+
+.garment-brand {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.garment-title {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--text-primary);
+  margin-top: 0.2rem;
+}
+
+.garment-attributes {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.25rem;
+}
+
+.garment-pill {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: var(--bg-card);
+  padding: 0.2rem 0.45rem;
+  border: 1px solid var(--border-hairline);
+  color: var(--text-secondary);
+}
+
+.garment-advice-box {
+  background: rgba(255, 255, 255, 0.02);
+  border-left: 2px solid var(--text-accent);
+  padding: 0.5rem 0.65rem;
+  font-size: 11px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.garment-footer {
+  margin-top: 0.5rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--border-hairline);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.garment-price-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.garment-price-val {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.garment-sku {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-tertiary);
+}
+
+/* Multi-Store CTA Buttons in Card */
+.garment-cta-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+/* =======================================================
+ * "SEEN IN REEL" MODAL / MINI-PLAYER POPUP
+ * Lightweight embedded video player directly looping outfit clip
+ * ======================================================= */
+.seen-reel-modal-content {
+  display: flex;
+  flex-direction: row;
+  max-width: 840px;
+  width: 90vw;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-hairline);
+  overflow: hidden;
+  position: relative;
+}
+
+.seen-reel-video-col {
+  width: 380px;
+  aspect-ratio: 9 / 16;
+  background: #000;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.seen-reel-video-col video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.seen-reel-details-col {
+  flex: 1;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow-y: auto;
+  max-height: 80vh;
+}
+
+.seen-reel-header {
+  border-bottom: 1px solid var(--border-hairline);
+  padding-bottom: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.seen-reel-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent-gold);
+}
+
+.seen-reel-heading {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-top: 0.35rem;
+  line-height: 1.2;
+}
+
+.seen-reel-caption {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-top: 0.75rem;
+}
+
+.seen-reel-garments-title {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  margin-bottom: 0.75rem;
+}
+
+.seen-reel-garments-mini {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.seen-mini-garment-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-hairline);
+}
+
+.seen-mini-thumb {
+  width: 44px;
+  height: 56px;
+  object-fit: cover;
+}
+
+.seen-mini-info {
+  flex: 1;
+}
+
+.seen-mini-brand {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.seen-mini-name {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.seen-reel-close-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-hairline);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.seen-reel-close-btn:hover {
+  background: var(--text-primary);
+  color: var(--bg-primary);
+}
+
+/* Empty State */
+.catalog-empty-state {
+  grid-column: 1 / -1;
+  padding: 5rem 2rem;
+  text-align: center;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-hairline);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.catalog-empty-state h3 {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.catalog-empty-state p {
+  color: var(--text-secondary);
+  max-width: 420px;
+  font-size: 13px;
+}
+
+/* Responsive Grid Rules (Section 7) */
+@media (max-width: 1200px) {
+  .editorial-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Responsive Grid Rules (Section 7) */
+@media (max-width: 1200px) {
+  .editorial-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 850px) {
+  .wardrobe-container {
+    padding: 1.25rem 0.85rem 5rem 0.85rem;
+  }
+  .wardrobe-hero {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.25rem;
+  }
+  .wardrobe-main-heading {
+    font-size: 1.65rem;
+  }
+  .taxonomy-filter-wrapper {
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+  }
+  .filter-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.4rem;
+    width: 100%;
+  }
+  .filter-group-label {
+    min-width: auto;
+    font-size: 9px;
+  }
+  .filter-chips {
+    width: 100%;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 4px;
+  }
+  .filter-chips::-webkit-scrollbar {
+    display: none;
+  }
+  .filter-chip {
+    flex-shrink: 0;
+    font-size: 10px;
+    padding: 0.35rem 0.65rem;
+  }
+  .editorial-grid {
+    grid-template-columns: repeat(2, 1fr); /* 2-column on mobile */
+    gap: 0.65rem;
+  }
+  .garment-card-body {
+    padding: 0.75rem 0.6rem;
+    gap: 0.5rem;
+  }
+  .garment-brand {
+    font-size: 9px;
+  }
+  .garment-title {
+    font-size: 0.85rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .garment-attributes {
+    gap: 0.25rem;
+  }
+  .garment-pill {
+    font-size: 8px;
+    padding: 0.15rem 0.35rem;
+  }
+  .garment-advice-box {
+    font-size: 9px;
+    padding: 0.35rem 0.45rem;
+    margin-top: 0.35rem;
+  }
+  .garment-footer {
+    padding-top: 0.5rem;
+    gap: 0.5rem;
+  }
+  .garment-price-val {
+    font-size: 11px;
+  }
+  .garment-sku {
+    font-size: 8px;
+  }
+  .btn-buy-primary {
+    padding: 0.5rem 0.6rem;
+    font-size: 10px;
+    letter-spacing: 0.06em;
+  }
+  .seen-reel-modal-content {
+    flex-direction: column;
+    max-height: 90vh;
+    width: 95vw;
+    overflow-y: auto;
+  }
+  .seen-reel-video-col {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+  }
+  .seen-reel-details-col {
+    padding: 1.25rem;
+  }
+}
+
+@media (max-width: 440px) {
+  .editorial-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+  .wardrobe-container {
+    padding: 1rem 0.5rem 5rem 0.5rem;
+  }
+  .garment-card-body {
+    padding: 0.6rem 0.45rem;
+  }
+  .garment-title {
+    font-size: 0.8rem;
+  }
+  .btn-buy-primary {
+    padding: 0.45rem 0.5rem;
+    font-size: 9px;
+  }
+}

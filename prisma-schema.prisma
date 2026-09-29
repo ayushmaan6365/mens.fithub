@@ -1,0 +1,141 @@
+// Men's Fit Hub Relational Database Schema
+// PRD Ref: PRD-MFH-2026-V2 (PostgreSQL 16 with Prisma ORM)
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Category {
+  SHIRT
+  PANT
+  SHOE
+  ACCESSORY
+  OUTERWEAR
+}
+
+enum Retailer {
+  AMAZON
+  FLIPKART
+  MYNTRA
+  AJIO
+}
+
+model Reel {
+  id           String        @id @default(cuid())
+  slug         String        @unique
+  title        String
+  caption      String?
+  videoUrl     String        // Adaptive HLS playlist (.m3u8) or optimized MP4
+  posterUrl    String        // Optimized WebP poster image
+  durationSec  Float         // Duration for timeline sync
+  aspectRatio  String        @default("9:16")
+  tags         String[]      // ["streetwear", "summer", "linen", "minimalism"]
+  displayOrder Int           @default(0)
+  isPublished  Boolean       @default(false)
+  viewCount    Int           @default(0)
+  items        ReelProduct[] // Relational link to Garments
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model Product {
+  id             String          @id @default(cuid())
+  sku            String          @unique
+  name           String
+  brand          String
+  category       Category
+  fitType        String?         // "Oversized", "Slim Fit", "Relaxed"
+  color          String?
+  primaryImage   String
+  galleryImages  String[]
+  priceEstimate  Float?          // For customer price display guidance
+  isArchived     Boolean         @default(false)
+  reels          ReelProduct[]
+  affiliateLinks AffiliateLink[]
+  clickEvents    ClickEvent[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+}
+
+model ReelProduct {
+  id        String   @id @default(cuid())
+  reelId    String
+  productId String
+  pinOrder  Int      @default(0)
+  reel      Reel     @relation(fields: [reelId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([reelId, productId])
+}
+
+model AffiliateLink {
+  id           String    @id @default(cuid())
+  productId    String
+  retailer     Retailer
+  rawUrl       String    // Original unmodified vendor product URL
+  affiliateUrl String    // Validated URL with creator affiliate tag injected
+  isActive     Boolean   @default(true)
+  product      Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt    DateTime  @default(now())
+}
+
+model ClickEvent {
+  id          String    @id @default(cuid())
+  productId   String
+  reelId      String?
+  retailer    Retailer
+  ipHash      String
+  userAgent   String
+  timestamp   DateTime  @default(now())
+  product     Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+enum OrderStatus {
+  IN_TRANSIT
+  PROCESSING
+  OUT_FOR_DELIVERY
+  DELIVERED
+  CANCELLED
+}
+
+model Customer {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  name         String
+  phone        String?
+  avatar       String?
+  provider     String    @default("EMAIL") // "EMAIL" or "GOOGLE"
+  registeredAt DateTime  @default(now())
+  lastLoginAt  DateTime  @default(now())
+  loginCount   Int       @default(1)
+  orders       Order[]
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+model Order {
+  id             String      @id @default(cuid())
+  orderNumber    String      @unique
+  customerId     String
+  productId      String
+  productName    String
+  productImage   String
+  brand          String
+  category       Category
+  price          Float
+  size           String?
+  retailer       Retailer
+  status         OrderStatus @default(IN_TRANSIT)
+  orderDate      DateTime    @default(now())
+  deliveryDate   DateTime?
+  trackingNumber String?
+  affiliateUrl   String?
+  customer       Customer    @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  createdAt      DateTime    @default(now())
+}
+
